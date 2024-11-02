@@ -25,7 +25,7 @@ public class UserServiceImpl implements UserService{
 
         User user = User.builder()
                 .name(userRequest.name())
-                .userType(userRequest.userType())
+                .user_type(userRequest.user_type())
                 .email(userRequest.email())
                 .role(userRequest.role())
                 .build();
@@ -33,7 +33,7 @@ public class UserServiceImpl implements UserService{
         log.debug("Room {} is saved", user.getId());
 
 
-        return null;
+        return new UserResponse(userRequest.id(), userRequest.name(), userRequest.email(), userRequest.user_type(), userRequest.role());
     }
 
     @Override
@@ -43,7 +43,7 @@ public class UserServiceImpl implements UserService{
     }
 
     private  UserResponse mapToUserResponse(User user){
-        return new UserResponse(user.getId(),  user.getName(), user.getEmail(), user.getUserType(),user.getRole());
+        return new UserResponse(user.getId(),  user.getName(), user.getEmail(), user.getUser_type(),user.getRole());
     }
 //    @Override
 //    @Query(value= "SELECT r from Room r where r.availability=true")
@@ -59,7 +59,7 @@ public class UserServiceImpl implements UserService{
         if(user !=null){
             user.setName(userRequest.name());
             user.setEmail(userRequest.email());
-            user.setUserType(userRequest.userType());
+            user.setUser_type(userRequest.user_type());
             user.setRole(userRequest.role());
 
             return userRepository.save(user).getId();

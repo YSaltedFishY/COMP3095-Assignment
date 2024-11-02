@@ -10,6 +10,6 @@ public record UserRequest(
         Long id,
         String name,
         String email,
-        UserType userType,
+        UserType user_type,
         String role){
 }
