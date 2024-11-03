@@ -55,8 +55,6 @@ public class UserController {
 
     public ResponseEntity<UserResponse> deleteRoom(@PathVariable ("userId") Long userId, @RequestBody UserRequest userRequest){
         userService.deleteUser(userId);
-
-
         return new ResponseEntity<>( HttpStatus.NO_CONTENT);
 
     }

@@ -44,6 +44,22 @@ public class RoomServiceImpl implements RoomService{
         return rooms.stream().map(this::mapToRoomResponse).toList();
     }
 
+    @Override
+    public List<RoomResponse> getAvailableRooms() {
+        List<Room> rooms=roomRepository.findAllByAvailabilityTrue();
+
+
+
+        return rooms.stream().map(this::mapToRoomResponse).toList();
+    }
+
+    @Override
+    public Boolean checkRoomAvailability(Long id) {
+
+        Room room = roomRepository.getReferenceById(id);
+        return room.getAvailability();
+    }
+
     private  RoomResponse mapToRoomResponse(Room room){
         return new RoomResponse(room.getId(),  room.getAvailability(), room.getRoomName(), room.getFeatures(),room.getPrice(), room.getCapacity());
     }

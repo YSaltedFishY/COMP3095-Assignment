@@ -9,9 +9,9 @@ public interface RoomService {
     RoomResponse createRoom(RoomRequest roomRequest);
 
     List<RoomResponse> getAllRooms();
-    //List<RoomResponse> getAvailableRooms();
+    List<RoomResponse> getAvailableRooms();
 
-//    Boolean checkRoomAvailability(Long id);
+    Boolean checkRoomAvailability(Long id);
 
     Long updateRoom(Long id, RoomRequest roomRequest);
 

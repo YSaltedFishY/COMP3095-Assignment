@@ -64,6 +64,9 @@ public class UserServiceImpl implements UserService{
 
             return userRepository.save(user).getId();
         }
+        else{
+            log.debug("User not exists");
+        }
         return id;
     }
 
