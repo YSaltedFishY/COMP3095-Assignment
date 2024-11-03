@@ -38,11 +38,12 @@ public class UserController {
 
     @GetMapping
     @ResponseStatus(HttpStatus.OK)
-    public List<UserResponse> getAllRooms(){
+    public List<UserResponse> getAllUsers(){
         return userService.getAllUsers();
     }
-    @PutMapping("/{userId}/")
+    @PutMapping("/{userId}")
     public ResponseEntity<UserResponse> updateUser(@PathVariable ("userId") Long userId, @RequestBody UserRequest userRequest){
+        //log.debug("userUpdating");
         Long updatedRoomId= userService.updateUser(userId, userRequest);
 
         HttpHeaders headers = new HttpHeaders();
@@ -52,8 +53,7 @@ public class UserController {
 
     }
     @DeleteMapping("/{userId}")
-
-    public ResponseEntity<UserResponse> deleteRoom(@PathVariable ("userId") Long userId, @RequestBody UserRequest userRequest){
+    public ResponseEntity<UserResponse> deleteUser(@PathVariable ("userId") Long userId){
         userService.deleteUser(userId);
         return new ResponseEntity<>( HttpStatus.NO_CONTENT);
 

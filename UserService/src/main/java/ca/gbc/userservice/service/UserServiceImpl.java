@@ -54,6 +54,8 @@ public class UserServiceImpl implements UserService{
 
     @Override
     public Long updateUser(Long id, UserRequest userRequest) {
+        log.debug("User not exists");
+
         User user = userRepository.getReferenceById(id);
 
         if(user !=null){

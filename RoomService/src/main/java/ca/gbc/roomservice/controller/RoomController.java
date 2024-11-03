@@ -41,7 +41,22 @@ public class RoomController {
     public List<RoomResponse> getAllRooms(){
         return roomService.getAllRooms();
     }
-    @PostMapping("/{roomId}")
+    @GetMapping("/available")
+    @ResponseStatus(HttpStatus.OK)
+    public List<RoomResponse> getAvailableRooms(){
+        return roomService.getAvailableRooms();
+    }
+    @GetMapping("/{roomId}")
+    @ResponseStatus(HttpStatus.OK)
+    public Boolean getRoomAvailability( @PathVariable ("roomId") Long roomId){
+        return roomService.checkRoomAvailability(roomId);
+    }
+
+
+
+
+
+    @PutMapping("/{roomId}")
     public ResponseEntity<RoomResponse> updateRoom(@PathVariable ("roomId") Long roomId,@RequestBody RoomRequest roomRequest){
         Long updatedRoomId=roomService.updateRoom(roomId, roomRequest);
 
@@ -51,8 +66,8 @@ public class RoomController {
         return new ResponseEntity<>(headers, HttpStatus.NO_CONTENT);
 
     }
-    @PostMapping("/{roomId}")
-    public ResponseEntity<RoomResponse> deleteRoom(@PathVariable ("roomId") Long roomId,@RequestBody RoomRequest roomRequest){
+    @DeleteMapping("/{roomId}")
+    public ResponseEntity<RoomResponse> deleteRoom(@PathVariable ("roomId") Long roomId){
         roomService.deleteRoom(roomId);
 
 
