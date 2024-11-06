@@ -37,6 +37,8 @@ dependencies {
     testImplementation("org.springframework.boot:spring-boot-testcontainers")
     testImplementation("org.testcontainers:junit-jupiter")
     testImplementation("org.testcontainers:mysql")
+    testImplementation("io.rest-assured:rest-assured:5.5.0")
+
     testRuntimeOnly("org.junit.platform:junit-platform-launcher")
 }
 

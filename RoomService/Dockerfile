@@ -26,6 +26,4 @@ ENV POSTGRES_USER=admin
 #expose point 8084 of our container
 EXPOSE 8084
 
-#entrypoint defines command to run when container starts
-#command line analogy: java -har /app/product-service.jar
 ENTRYPOINT ["java", "-jar", "/app/room-service.jar"]
