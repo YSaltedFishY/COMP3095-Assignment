@@ -20,11 +20,11 @@ public class BookingServiceImpl implements BookingService {
 
     @Override
     public BookingResponse createBooking(BookingRequest bookingRequest) {
-       //TODO: Validate
+        //TODO: Validate
 
         // Create a new Booking object
         Booking booking = Booking.builder()
-                .id(bookingRequest.bookingId())
+                .bookingId(bookingRequest.bookingId())
                 .userId(bookingRequest.UserId())
                 .roomId(bookingRequest.roomId())
                 .startTime(bookingRequest.startTime())
@@ -33,11 +33,44 @@ public class BookingServiceImpl implements BookingService {
                 .build();
         Booking savedBooking = bookingRepository.save(booking);
 
-        return new BookingResponse(savedBooking.getId(), "SUCCESS", "Booking created successfully.");
+        return new BookingResponse(savedBooking.getBookingId(),savedBooking.getUserId(),savedBooking.getUserId(),
+                savedBooking.getEndTime(),savedBooking.getStartTime(),savedBooking.getPurpose());
     }
 
     @Override
     public List<BookingResponse> getAllBookings(BookingRequest bookingRequest) {
+        log.debug("Return a list of bookings");
+        List<Booking> bookings = bookingRepository.findAll();
+        return bookings.stream().map(this::mapToBookingResponse).toList();
+
+    }
+
+    private BookingResponse mapToBookingResponse(Booking booking) {
+        return new BookingResponse(
+                booking.getBookingId(),
+                booking.getRoomId(),
+                booking.getUserId(),
+                booking.getStartTime(),
+                booking.getEndTime(),
+                booking.getPurpose());
+    }
+
+    @Override
+    public List<BookingResponse> getUserBookings(String UserId) {
+        return null;
+    }
+
+    @Override
+    public BookingResponse UpdateBooking(String bookingId, BookingRequest bookingRequest) {
+        return null;
+    }
+
+    @Override
+    public BookingResponse deleteBooking(String bookingId) {
         return null;
     }
 }
+
+
+
+
