@@ -11,6 +11,8 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/api/booking")
 @RequiredArgsConstructor
@@ -32,4 +34,29 @@ public class BookingController {
                 .contentType(MediaType.APPLICATION_JSON)
                 .body(createdBooking);
     }
+
+    @GetMapping
+    @ResponseStatus(HttpStatus.OK)
+    public List<BookingResponse> getAllBookings() {
+        return bookingService.getAllBookings();
+
+    }
+
+    @PutMapping("/{bookingId}")
+    public ResponseEntity<BookingResponse> updateBooking(@PathVariable("bookingId") String bookingId, @RequestBody BookingRequest bookingRequest) {
+
+        String id = bookingService.UpdateBooking(bookingId, bookingRequest);
+        HttpHeaders header = new HttpHeaders();
+        header.add("Location", "/api/booking/" + id);
+
+        return new ResponseEntity<>(header,HttpStatus.NO_CONTENT);
+    }
+
+    @DeleteMapping("/{bookingId}")
+    public ResponseEntity<BookingResponse> deleteBooking(@PathVariable("bookingId") String bookingId){
+
+        bookingService.deleteBooking(bookingId);
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+    }
+
 }
