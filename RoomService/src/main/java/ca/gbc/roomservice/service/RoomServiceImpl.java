@@ -22,10 +22,10 @@ public class RoomServiceImpl implements RoomService{
 
     @Override
     public RoomResponse createRoom(RoomRequest roomRequest) {
-        log.debug("Creating a new room {}", roomRequest.roomName());
+        log.debug("Creating a new room {}", roomRequest.room_name());
 
         Room room = Room.builder()
-                .room_name(roomRequest.roomName())
+                .room_name(roomRequest.room_name())
                 .features(roomRequest.features())
                 .availability(roomRequest.availability())
                 .capacity(roomRequest.capacity())
@@ -35,7 +35,8 @@ public class RoomServiceImpl implements RoomService{
         log.debug("Room {} is saved", room.getId());
 
 
-        return null;
+        return new RoomResponse(room.getId(),  room.getAvailability(), room.getRoom_name(), room.getFeatures(),room.getPrice(), room.getCapacity());
+
     }
 
     @Override
@@ -75,7 +76,7 @@ public class RoomServiceImpl implements RoomService{
         Room roomToUpdate = roomRepository.getReferenceById(id);
 
         if(roomToUpdate !=null){
-            roomToUpdate.setRoom_name(roomRequest.roomName());
+            roomToUpdate.setRoom_name(roomRequest.room_name());
             roomToUpdate.setAvailability(roomRequest.availability());
             roomToUpdate.setPrice(roomRequest.price());
             roomToUpdate.setFeatures(roomRequest.features());
