@@ -25,7 +25,7 @@ public class RoomServiceImpl implements RoomService{
         log.debug("Creating a new room {}", roomRequest.roomName());
 
         Room room = Room.builder()
-                .roomName(roomRequest.roomName())
+                .room_name(roomRequest.roomName())
                 .features(roomRequest.features())
                 .availability(roomRequest.availability())
                 .capacity(roomRequest.capacity())
@@ -61,7 +61,7 @@ public class RoomServiceImpl implements RoomService{
     }
 
     private  RoomResponse mapToRoomResponse(Room room){
-        return new RoomResponse(room.getId(),  room.getAvailability(), room.getRoomName(), room.getFeatures(),room.getPrice(), room.getCapacity());
+        return new RoomResponse(room.getId(),  room.getAvailability(), room.getRoom_name(), room.getFeatures(),room.getPrice(), room.getCapacity());
     }
 //    @Override
 //    @Query(value= "SELECT r from Room r where r.availability=true")
@@ -75,7 +75,7 @@ public class RoomServiceImpl implements RoomService{
         Room roomToUpdate = roomRepository.getReferenceById(id);
 
         if(roomToUpdate !=null){
-            roomToUpdate.setRoomName(roomRequest.roomName());
+            roomToUpdate.setRoom_name(roomRequest.roomName());
             roomToUpdate.setAvailability(roomRequest.availability());
             roomToUpdate.setPrice(roomRequest.price());
             roomToUpdate.setFeatures(roomRequest.features());
