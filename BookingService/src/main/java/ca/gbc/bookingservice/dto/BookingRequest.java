@@ -3,7 +3,7 @@ package ca.gbc.bookingservice.dto;
 import java.util.Date;
 
 public record BookingRequest(
-    String Id,
+    String bookingId,
     String UserId,
     String roomId,
     Date startTime,
