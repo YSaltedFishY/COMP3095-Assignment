@@ -1,5 +1,8 @@
 package ca.gbc.bookingservice.dto;
 
-public class BookingResponse {
-
+public record BookingResponse(
+        String bookingId,
+        String status,
+        String message
+) {
 }
