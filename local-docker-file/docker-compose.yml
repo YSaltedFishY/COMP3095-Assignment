@@ -87,18 +87,18 @@ services:
     image: mongo
     container_name: bookingservice-mongodb
     ports:
-      - "1971:1971"
+      - "27017:27017"
     environment:
       MONGO_INITDB_ROOT_DATABASE: booking-service
-      MONGO_INITDB_ROOT_USERNAME: admin  # Set the root username
-      MONGO_INITDB_ROOT_PASSWORD: password  # Set the root password
+      MONGO_INITDB_ROOT_USERNAME: admin
+      MONGO_INITDB_ROOT_PASSWORD: password
     command: mongod --auth
     volumes:
-      - ./data/booking:/data/db  # Volume for persistent data storage
+      - ./data/booking:/data/db
 
 volumes:
   postgres:
-    driver: local # use local driver to persist data on the host
+    driver: local
 networks:
   spring:
-    driver: bridge # bridge allows isolated communication between containers
+    driver: bridge
