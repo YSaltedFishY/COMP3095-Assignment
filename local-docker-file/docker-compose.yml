@@ -83,6 +83,18 @@ services:
     environment:
       - PGADMIN_DEFAULT_EMAIL=user@domain.ca
       - PGADMIN_DEFAULT_PASSWORD=password
+  bookingservice-mongodb:
+    image: mongo
+    container_name: bookingservice-mongodb
+    ports:
+      - "1971:1971"
+    environment:
+      MONGO_INITDB_ROOT_DATABASE: booking-service
+      MONGO_INITDB_ROOT_USERNAME: admin  # Set the root username
+      MONGO_INITDB_ROOT_PASSWORD: password  # Set the root password
+    command: mongod --auth
+    volumes:
+      - ./data/booking:/data/db  # Volume for persistent data storage
 
 volumes:
   postgres:
