@@ -33,7 +33,7 @@ public class UserServiceImpl implements UserService{
         log.debug("Room {} is saved", user.getId());
 
 
-        return new UserResponse(userRequest.id(), userRequest.name(), userRequest.email(), userRequest.user_type(), userRequest.role());
+        return new UserResponse(user.getId(), user.getName(), user.getEmail(), user.getUser_type(), user.getRole());
     }
 
     @Override
@@ -76,5 +76,14 @@ public class UserServiceImpl implements UserService{
     public void deleteUser(Long id) {
         userRepository.deleteById(id);
 
+    }
+    @Override
+    public Boolean checkUserStaff(Long id) {
+
+        User user = userRepository.getReferenceById(id);
+        return user.getUser_type().equals(UserType.Staff);
+    }
+    public void deleteAllUsers() {
+        userRepository.deleteAll();
     }
 }
