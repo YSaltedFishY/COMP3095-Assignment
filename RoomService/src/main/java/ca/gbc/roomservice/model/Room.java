@@ -21,11 +21,10 @@ public class Room {
     private Long id;
 
 
-    private Boolean availability=true;
-    private String roomName;
+    private Boolean availability;
+    private String room_name;
     private String features;
     private BigDecimal price;
-    @NotBlank
     private Integer capacity;
 
 }

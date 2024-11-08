@@ -1,7 +1,7 @@
 CREATE TABLE t_rooms (
     id BIGSERIAL NOT NULL,
     availability BOOLEAN DEFAULT true,
-    roomName VARCHAR(255),
+    room_name VARCHAR(255),
     features VARCHAR(255),
     price DECIMAL (6,2),
     capacity NUMERIC,

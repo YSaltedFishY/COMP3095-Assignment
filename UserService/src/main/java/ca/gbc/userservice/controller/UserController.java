@@ -58,6 +58,19 @@ public class UserController {
         return new ResponseEntity<>( HttpStatus.NO_CONTENT);
 
     }
+    @GetMapping("/approve/{userId}")
+    @ResponseStatus(HttpStatus.OK)
+    public Boolean checkIfUserStaff( @PathVariable ("userId") Long userId){
+        return userService.checkUserStaff(userId);
+    }
+    @DeleteMapping("/deleteeverything")
+    @ResponseStatus(HttpStatus.OK)
+    public ResponseEntity<UserResponse> deleteAll(){
+         userService.deleteAllUsers();
+        return new ResponseEntity<>( HttpStatus.NO_CONTENT);
+
+    }
+
 
 
 
