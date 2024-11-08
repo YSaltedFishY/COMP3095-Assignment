@@ -24,7 +24,7 @@ public class BookingServiceImpl implements BookingService {
 
         // Create a new Booking object
         Booking booking = Booking.builder()
-                .id(bookingRequest.Id())
+                .id(bookingRequest.bookingId())
                 .userId(bookingRequest.UserId())
                 .roomId(bookingRequest.roomId())
                 .startTime(bookingRequest.startTime())
