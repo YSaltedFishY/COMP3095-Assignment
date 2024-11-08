@@ -1,5 +1,4 @@
 package ca.gbc.userservice.service;
-import ca.gbc.userservice.model.UserType;
 
 import ca.gbc.userservice.dto.UserRequest;
 import ca.gbc.userservice.dto.UserResponse;
@@ -15,9 +14,7 @@ import java.util.List;
 @Slf4j
 @RequiredArgsConstructor
 public class UserServiceImpl implements UserService{
-
     private final UserRepository userRepository;
-
 
     @Override
     public UserResponse createUser(UserRequest userRequest) {

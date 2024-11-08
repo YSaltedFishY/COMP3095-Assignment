@@ -2,7 +2,6 @@ package ca.gbc.userservice.controller;
 
 import ca.gbc.userservice.dto.UserRequest;
 import ca.gbc.userservice.dto.UserResponse;
-import ca.gbc.userservice.model.User;
 import ca.gbc.userservice.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpHeaders;
@@ -41,6 +40,8 @@ public class UserController {
     public List<UserResponse> getAllUsers(){
         return userService.getAllUsers();
     }
+
+
     @PutMapping("/{userId}")
     public ResponseEntity<UserResponse> updateUser(@PathVariable ("userId") Long userId, @RequestBody UserRequest userRequest){
         //log.debug("userUpdating");
@@ -58,7 +59,4 @@ public class UserController {
         return new ResponseEntity<>( HttpStatus.NO_CONTENT);
 
     }
-
-
-
 }

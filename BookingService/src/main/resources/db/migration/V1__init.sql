@@ -1,0 +1,10 @@
+CREATE TABLE t_bookings
+(
+    id       BIGSERIAL PRIMARY KEY,
+    event_id BIGSERIAL   NOT NULL,
+    user_id  BIGSERIAL   NOT NULL,
+    status   VARCHAR(50) NOT NULL,
+    time     TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    CONSTRAINT fk_event FOREIGN KEY (event_id) REFERENCES event (id),
+    CONSTRAINT fk_user FOREIGN KEY (user_id) REFERENCES users (id)
+);

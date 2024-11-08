@@ -7,7 +7,7 @@ public record RoomResponse(
 
 
         Boolean availability,
-        String roomName,
+        String room_name,
         String features,
         BigDecimal price,
         Integer capacity

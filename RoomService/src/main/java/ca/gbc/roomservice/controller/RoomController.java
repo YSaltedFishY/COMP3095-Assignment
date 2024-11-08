@@ -2,7 +2,6 @@ package ca.gbc.roomservice.controller;
 
 import ca.gbc.roomservice.dto.RoomRequest;
 import ca.gbc.roomservice.dto.RoomResponse;
-import ca.gbc.roomservice.model.Room;
 import ca.gbc.roomservice.service.RoomService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpHeaders;
@@ -17,6 +16,7 @@ import java.util.List;
 @RequestMapping("/api/room")
 @RequiredArgsConstructor
 public class RoomController {
+
     private final RoomService roomService;
 
     @PostMapping
@@ -74,7 +74,4 @@ public class RoomController {
         return new ResponseEntity<>( HttpStatus.NO_CONTENT);
 
     }
-
-
-
 }
