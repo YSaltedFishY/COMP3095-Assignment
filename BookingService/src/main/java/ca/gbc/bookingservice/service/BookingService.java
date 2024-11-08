@@ -11,5 +11,11 @@ public interface BookingService {
 
     List<BookingResponse> getAllBookings(BookingRequest bookingRequest);
 
+    List<BookingResponse> getUserBookings(String UserId);
+
+    BookingResponse UpdateBooking(String bookingId, BookingRequest bookingRequest);
+
+    BookingResponse deleteBooking(String bookingId);
+
 
 }

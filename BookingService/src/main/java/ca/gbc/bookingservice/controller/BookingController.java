@@ -25,7 +25,7 @@ public class BookingController {
         BookingResponse createdBooking = bookingService.createBooking(bookingRequest);
 
         HttpHeaders headers = new HttpHeaders();
-        headers.add("Location", "/api/user/" + createdBooking.bookingId());
+        headers.add("Location", "/api/booking/" + createdBooking.bookingId());
 
         return ResponseEntity.status(HttpStatus.CREATED)
                 .headers(headers)
