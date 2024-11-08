@@ -1,0 +1,33 @@
+version: '3.8'
+
+services:
+  booking-service:
+    build: .
+    ports:
+      - "8081:8081"
+    depends_on:
+      - mongodb
+    environment:
+      - ://mongodb:27017/booking-service
+    networks:
+      - booking-network
+
+  mongodb:
+    image: mongo:latest
+    container_name: booking-mongodb
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: admin
+      MONGO_INITDB_ROOT_PASSWORD: password
+      MONGO_INITDB_DATABASE: booking-service
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongodb-data:/data/db
+    networks:
+      - booking-network
+
+networks:
+  booking-network:
+
+volumes:
+  mongodb-data:
