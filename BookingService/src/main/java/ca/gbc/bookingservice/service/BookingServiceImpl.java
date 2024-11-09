@@ -1,8 +1,10 @@
 package ca.gbc.bookingservice.service;
 
+import ca.gbc.bookingservice.client.RoomServiceClient;
 import ca.gbc.bookingservice.dto.BookingRequest;
 import ca.gbc.bookingservice.dto.BookingResponse;
 import ca.gbc.bookingservice.model.Booking;
+import ca.gbc.roomservice.dto.RoomResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.mongodb.core.MongoTemplate;
@@ -18,12 +20,15 @@ import java.util.List;
 @RequiredArgsConstructor
 public class BookingServiceImpl implements BookingService {
     private final BookingRepository bookingRepository;
+    private final RoomServiceClient roomServiceClient;
     private final MongoTemplate mongoTemplate;
 
     @Override
     public BookingResponse createBooking(BookingRequest bookingRequest) {
         //TODO: Validate
+        List<RoomResponse> availableRooms =roomServiceClient.getBookingDetails();
 
+        if(availableRooms.contains(bookingRequest.roomId()));
         // Create a new Booking object
         Booking booking = Booking.builder()
                 .bookingId(bookingRequest.bookingId())
