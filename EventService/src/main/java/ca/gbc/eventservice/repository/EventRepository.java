@@ -8,4 +8,5 @@ import java.util.List;
 public interface EventRepository extends MongoRepository<Event, String> {
 
     List<Event> findByOrganizerId(String organizerId);
+    Event findByBookingId(String bookingId);
 }

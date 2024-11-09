@@ -1,10 +1,22 @@
 package ca.gbc.eventservice.dto;
 
-public record EventRequest(String id,
+import java.util.Date;
+
+public record EventRequest(
+        String id,
         String eventName,
         String organizerId,
         String eventType,
         int expectedAttendees,
-        String roomId) {
+        Long roomId,
+        // for booking
+
+        String bookingId,
+        Long userId,
+        Date startTime,
+        Date endTime,
+        String purpose
+) {
+
 
 }
