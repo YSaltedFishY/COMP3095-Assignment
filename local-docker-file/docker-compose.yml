@@ -1,8 +1,8 @@
 #updates with every new container-all the containers
 
-#docker-compose -p comp3095-microservices-ecommerce -f docker-compose-single.yml up -d --build
+#docker-compose -p comp3095-microservices-assignment01 -f docker-compose.yml up -d --build
 # start containers in detached mode
-#docker-compose -p comp3095-microservices-ecommerce -f docker-compose-single.yml up -d --build
+#docker-compose -p comp3095-microservices-assignment01 -f docker-compose.yml up -d --build
 #version: '3.9'
 
 #to add order-service, have to create integration tests by yourelf
@@ -62,18 +62,6 @@ services:
       - ./data/event:/var/lib/postgresql/data
       - ./init/event/init.sql:/docker-entrypoint-initdb.d/init.sql
 
-  postgres-booking:
-    image: postgres
-    ports:
-      - "5437:5432"
-    container_name: postgres-booking
-    environment:
-      - POSTGRES_USER=admin
-      - POSTGRES_PASSWORD=password
-      - POSTGRES_DB=postgres-booking-services
-    volumes:
-      - ./data/booking:/var/lib/postgresql/data
-      - ./init/booking/init.sql:/docker-entrypoint-initdb.d/init.sql
   #GUI
   pgadmin:
     image: dpage/pgadmin4
@@ -83,6 +71,19 @@ services:
     environment:
       - PGADMIN_DEFAULT_EMAIL=user@domain.ca
       - PGADMIN_DEFAULT_PASSWORD=password
+
+  bookingservice-mongodb:
+    image: mongo
+    container_name: bookingservice-mongodb
+    ports:
+      - "1971:1971"
+    environment:
+      MONGO_INITDB_ROOT_DATABASE: booking-service
+      MONGO_INITDB_ROOT_USERNAME: admin  # Set the root username
+      MONGO_INITDB_ROOT_PASSWORD: password  # Set the root password
+    command: mongod --auth
+    volumes:
+      - ./data/booking:/data/db  # Volume for persistent data storage
 
 volumes:
   postgres:
