@@ -31,13 +31,13 @@ public class BookingController {
     @ResponseStatus(HttpStatus.CREATED)
     public ResponseEntity<BookingResponse> createBooking(@RequestBody BookingRequest bookingRequest) {
         BookingResponse createdBooking = bookingService.createBooking(bookingRequest);
-        List<RoomResponse> availableRooms =roomServiceClient.getBookingDetails();
+        Boolean availability =roomServiceClient.checkRoomAvailability(bookingRequest.roomId());
 
-        boolean isBookingIdAvailableAndRoomAvailable = availableRooms.stream()
-                .anyMatch(room -> room.id().equals(bookingRequest.roomId())
-                        && room.availability());
 
-        if(isBookingIdAvailableAndRoomAvailable){
+
+        if(availability){
+
+            roomServiceClient.updateAvailability(bookingRequest.roomId(),true);
 
             HttpHeaders headers = new HttpHeaders();
             headers.add("Location", "/api/booking/" + createdBooking.bookingId());

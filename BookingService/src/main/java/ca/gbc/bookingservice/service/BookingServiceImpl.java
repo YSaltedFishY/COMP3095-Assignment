@@ -24,7 +24,6 @@ public class BookingServiceImpl implements BookingService {
 
     @Override
     public BookingResponse createBooking(BookingRequest bookingRequest) {
-        //TODO: Validate
 
         // Create a new Booking object
         Booking booking = Booking.builder()
