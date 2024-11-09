@@ -5,7 +5,7 @@ import lombok.Data;
 import java.time.LocalDateTime;
 
 public record BookingResponse(
-        Long bookingId,
+        String bookingId,
         Long UserId,
         Long roomId,
         LocalDateTime startTime,

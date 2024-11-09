@@ -5,8 +5,8 @@ import lombok.Data;
 import java.time.LocalDateTime;
 
 public record BookingRequest(
-        Long bookingId,
-        Long UserId,
+        String bookingId,
+        Long userId,
         Long roomId,
         LocalDateTime startTime,
         LocalDateTime endTime,
