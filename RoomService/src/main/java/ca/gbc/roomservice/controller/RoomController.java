@@ -66,6 +66,16 @@ public class RoomController {
         return new ResponseEntity<>(headers, HttpStatus.NO_CONTENT);
 
     }
+    @PutMapping("/available/{roomId}")
+    public ResponseEntity<RoomResponse> updateAvailability(@PathVariable ("roomId") Long roomId,@RequestBody Boolean bool){
+        Long updatedRoomId=roomService.updateAvailability(roomId, bool);
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.add("Location","/api/room/available/"+updatedRoomId);
+
+        return new ResponseEntity<>(headers, HttpStatus.NO_CONTENT);
+
+    }
     @DeleteMapping("/{roomId}")
     public ResponseEntity<RoomResponse> deleteRoom(@PathVariable ("roomId") Long roomId){
         roomService.deleteRoom(roomId);
