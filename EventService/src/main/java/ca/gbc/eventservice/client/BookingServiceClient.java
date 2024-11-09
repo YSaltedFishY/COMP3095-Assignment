@@ -4,14 +4,11 @@ import ca.gbc.bookingservice.dto.BookingRequest;
 import ca.gbc.bookingservice.dto.BookingResponse;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.*;
 
 @FeignClient(name = "BookingService", url = "http://localhost:8080")
 public interface BookingServiceClient {
-    @GetMapping("/api/booking")
+    @PostMapping("/api/booking")
     ResponseEntity<BookingResponse> createBooking(@RequestBody BookingRequest bookingRequest);
 
     @PutMapping("/api/booking/{bookingId}")

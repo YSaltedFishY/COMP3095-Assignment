@@ -5,6 +5,6 @@ public record EventResponse(String id,
                            String organizerId,
                            String eventType,
                            int expectedAttendees,
-                           Long roomId) {
+                           String bookingId) {
 
 }
