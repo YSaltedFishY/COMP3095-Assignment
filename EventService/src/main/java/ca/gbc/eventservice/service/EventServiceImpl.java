@@ -97,7 +97,7 @@ public class EventServiceImpl implements EventService {
 
 
                 var savedbooking = bookingServiceClient.updateBooking(booking.getBookingId(), new BookingRequest(
-                        booking.getUserId(), booking.getRoomId(), booking.getStartTime(), booking.getEndTime(), booking.getPurpose()
+                       booking.getBookingId(), booking.getUserId(), booking.getRoomId(), booking.getStartTime(), booking.getEndTime(), booking.getPurpose()
                 ));
                 event = Event.builder()
                         .id(event.getId())
@@ -106,6 +106,7 @@ public class EventServiceImpl implements EventService {
                         .eventType(eventRequest.eventType())
                         .expectedAttendees(eventRequest.expectedAttendees())
                         .roomId(booking.getRoomId())
+                        .bookingId(booking.getBookingId())
                         .build();
             } catch (IllegalArgumentException e) {
                 throw new IllegalArgumentException("Room cannot be booked during this time period, no event was created");
@@ -158,7 +159,7 @@ public class EventServiceImpl implements EventService {
 
     private ResponseEntity<BookingResponse> createBooking(Booking booking) {
         BookingRequest bookingRequest = new BookingRequest(
-                booking.getUserId(), booking.getRoomId(), booking.getStartTime(), booking.getEndTime(), booking.getPurpose()
+               booking.getBookingId(), booking.getUserId(), booking.getRoomId(), booking.getStartTime(), booking.getEndTime(), booking.getPurpose()
 
         );
         return bookingServiceClient.createBooking(bookingRequest);
