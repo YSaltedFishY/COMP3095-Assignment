@@ -27,6 +27,7 @@ tasks.register("prepareKotlinBuildScriptModel"){}
 
 dependencies {
 	implementation("org.springframework.cloud:spring-cloud-starter-openfeign:4.1.3")
+	implementation("org.springframework.cloud:spring-cloud-starter-contract-stub-runner:4.1.4")
 	implementation("org.springframework.boot:spring-boot-starter-actuator")
 	implementation("org.springframework.boot:spring-boot-starter-data-jpa")
 	implementation("org.springframework.boot:spring-boot-starter-web")
@@ -38,9 +39,13 @@ dependencies {
 	annotationProcessor("org.projectlombok:lombok")
 	testImplementation("org.springframework.boot:spring-boot-starter-test")
 	testImplementation("org.springframework.boot:spring-boot-testcontainers")
+	testImplementation("org.testcontainers:testcontainers:1.18.0")
 	testImplementation("org.testcontainers:junit-jupiter")
-	testImplementation("org.testcontainers:postgresql")
+	testImplementation("org.testcontainers:postgresql:1.18.0")
 	testRuntimeOnly("org.junit.platform:junit-platform-launcher")
+	testImplementation("io.rest-assured:rest-assured:5.5.0")
+	testImplementation("org.springframework.boot:spring-boot-starter-test")
+	testImplementation("com.github.tomakehurst:wiremock-jre8:2.35.0")
 }
 
 tasks.withType<Test> {
