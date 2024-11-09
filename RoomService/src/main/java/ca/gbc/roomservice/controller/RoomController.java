@@ -71,7 +71,7 @@ public class RoomController {
         Long updatedRoomId=roomService.updateAvailability(roomId, bool);
 
         HttpHeaders headers = new HttpHeaders();
-        headers.add("Location","/api/room/available"+updatedRoomId);
+        headers.add("Location","/api/room/available/"+updatedRoomId);
 
         return new ResponseEntity<>(headers, HttpStatus.NO_CONTENT);
 
