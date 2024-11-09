@@ -11,8 +11,10 @@ import org.springframework.web.bind.annotation.RequestBody;
 
 @FeignClient(name = "BookingService", url = "http://localhost:8080")
 public interface BookingServiceClient {
-    @GetMapping("/api/booking}")
+    @GetMapping("/api/booking")
     ResponseEntity<BookingResponse> createBooking(@RequestBody BookingRequest bookingRequest);
 
+    @PutMapping("/api/booking/{bookingId}")
+    ResponseEntity<BookingResponse> updateBooking(@PathVariable("bookingId") String bookingId,@RequestBody BookingRequest bookingRequest);
 
 }

@@ -30,31 +30,42 @@ public class EventServiceImpl implements EventService {
     public EventResponse createEvent(EventRequest eventRequest) {
         log.debug("Creating a new event");
 
-//        Boolean isStaff = userServiceClient.checkIfUserStaff(Long.parseLong(eventRequest.organizerId()));
-//        if (!isStaff) {
-//            throw new IllegalArgumentException("Only staff members can create events.");
-//        }
 
-        Event event = Event.builder()
-                .eventName(eventRequest.eventName())
-                .organizerId(eventRequest.organizerId())
-                .eventType(eventRequest.eventType())
-                .expectedAttendees(eventRequest.expectedAttendees())
-                .roomId(eventRequest.roomId())
-                .build();
+        try {
+            Booking booking = Booking.builder()
+                    .userId(eventRequest.userId())
+                    .startTime(eventRequest.startTime())
+                    .endTime(eventRequest.endTime())
+                    .purpose(eventRequest.purpose())
+                    .roomId(eventRequest.roomId()).build();
+
+            Event event = Event.builder()
+                    .eventName(eventRequest.eventName())
+                    .organizerId(eventRequest.organizerId())
+                    .eventType(eventRequest.eventType())
+                    .expectedAttendees(eventRequest.expectedAttendees())
+                    .roomId(eventRequest.roomId())
+                    .build();
+            Event savedEvent = eventRepository.save(event);
+            this.createBooking(booking);
+            // Convert the saved Event to EventResponse DTO
+            return new EventResponse(
+                    savedEvent.getId(),
+                    savedEvent.getEventName(),
+                    savedEvent.getOrganizerId(),
+                    savedEvent.getEventType(),
+                    savedEvent.getExpectedAttendees(),
+                    savedEvent.getRoomId()
+            );
+        } catch (IllegalArgumentException e) {
+            throw new IllegalArgumentException("Room cannot be booked during this time period, no event was created");
+
+        }
+
 
         // Save the event to the repository
-        Event savedEvent = eventRepository.save(event);
 
-        // Convert the saved Event to EventResponse DTO
-        return new EventResponse(
-                savedEvent.getId(),
-                savedEvent.getEventName(),
-                savedEvent.getOrganizerId(),
-                savedEvent.getEventType(),
-                savedEvent.getExpectedAttendees(),
-                savedEvent.getRoomId()
-        );
+
     }
 
     @Override
@@ -66,7 +77,6 @@ public class EventServiceImpl implements EventService {
         return events.stream()
                 .map(this::mapToEventResponse).toList();
     }
-
 
 
     @Override
@@ -84,6 +94,11 @@ public class EventServiceImpl implements EventService {
                         .endTime(eventRequest.endTime())
                         .purpose(eventRequest.purpose())
                         .roomId(eventRequest.roomId()).build();
+
+
+                var savedbooking = bookingServiceClient.updateBooking(booking.getBookingId(), new BookingRequest(
+                        booking.getBookingId(), booking.getUserId(), booking.getRoomId(), booking.getStartTime(), booking.getEndTime(), booking.getPurpose()
+                ));
                 event = Event.builder()
                         .id(event.getId())
                         .eventName(eventRequest.eventName())
@@ -92,7 +107,7 @@ public class EventServiceImpl implements EventService {
                         .expectedAttendees(eventRequest.expectedAttendees())
                         .roomId(booking.getRoomId())
                         .build();
-            } catch (IllegalArgumentException e){
+            } catch (IllegalArgumentException e) {
                 throw new IllegalArgumentException("Room cannot be booked during this time period, no event was created");
 
             }
@@ -125,10 +140,11 @@ public class EventServiceImpl implements EventService {
     }
 
     @Override
-    public EventResponse getEventWithBookingId(String bookingId){
-        Event event= eventRepository.findByBookingId(bookingId);
+    public EventResponse getEventWithBookingId(String bookingId) {
+        Event event = eventRepository.findByBookingId(bookingId);
         return mapToEventResponse(event);
     }
+
     private EventResponse mapToEventResponse(Event event) {
         return new EventResponse(
                 event.getId(),
@@ -140,7 +156,11 @@ public class EventServiceImpl implements EventService {
         );
     }
 
-    private ResponseEntity<BookingResponse> createBooking(BookingRequest bookingRequest) {
+    private ResponseEntity<BookingResponse> createBooking(Booking booking) {
+        BookingRequest bookingRequest = new BookingRequest(
+                booking.getBookingId(), booking.getUserId(), booking.getRoomId(), booking.getStartTime(), booking.getEndTime(), booking.getPurpose()
+
+        );
         return bookingServiceClient.createBooking(bookingRequest);
 
     }
