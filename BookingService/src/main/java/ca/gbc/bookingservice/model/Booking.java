@@ -18,8 +18,8 @@ import java.util.Date;
 public class Booking {
     @Id
     private String bookingId;
-    private String userId;
-    private String roomId;
+    private Long userId;
+    private Long roomId;
     private Date startTime;
     private Date endTime;
     private String purpose;
