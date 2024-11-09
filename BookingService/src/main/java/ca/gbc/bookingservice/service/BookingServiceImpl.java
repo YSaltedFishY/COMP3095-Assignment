@@ -27,7 +27,7 @@ public class BookingServiceImpl implements BookingService {
         // Create a new Booking object
         Booking booking = Booking.builder()
                 .bookingId(bookingRequest.bookingId())
-                .userId(bookingRequest.UserId())
+                .userId(bookingRequest.userId())
                 .roomId(bookingRequest.roomId())
                 .startTime(bookingRequest.startTime())
                 .endTime(bookingRequest.endTime())
@@ -50,8 +50,8 @@ public class BookingServiceImpl implements BookingService {
     private BookingResponse mapToBookingResponse(Booking booking) {
         return new BookingResponse(
                 booking.getBookingId(),
-                booking.getRoomId(),
                 booking.getUserId(),
+                booking.getRoomId(),
                 booking.getStartTime(),
                 booking.getEndTime(),
                 booking.getPurpose());
@@ -73,7 +73,7 @@ public class BookingServiceImpl implements BookingService {
 
         if (booking != null) {
             booking.setBookingId(bookingRequest.bookingId());
-            booking.setUserId(bookingRequest.UserId()); //Could be changed
+            booking.setUserId(bookingRequest.userId()); //Could be changed
             booking.setRoomId(bookingRequest.roomId());
             booking.setStartTime(bookingRequest.startTime());
             booking.setEndTime(bookingRequest.endTime());
