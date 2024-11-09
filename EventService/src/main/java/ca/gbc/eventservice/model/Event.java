@@ -1,26 +1,26 @@
 package ca.gbc.eventservice.model;
 
-import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.time.LocalDateTime;
 
-@Entity
-@Table(name = "t_events")
+
+@Document
 @Getter
 @Setter
+@Builder
 @NoArgsConstructor
 @AllArgsConstructor
 public class Event {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
-    private String name;
-    private LocalDateTime dateTime;
-
+    private String id;
+    private String eventName;
+    private String organizerId;
+    private String eventType;
+    private int expectedAttendees;
+    private String roomId;
 
 }

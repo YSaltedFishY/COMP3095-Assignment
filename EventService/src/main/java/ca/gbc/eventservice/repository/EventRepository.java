@@ -1,7 +1,11 @@
 package ca.gbc.eventservice.repository;
 
 import ca.gbc.eventservice.model.Event;
-import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.mongodb.repository.MongoRepository;
 
-public interface EventRepository extends JpaRepository<Event, Long> {
+import java.util.List;
+
+public interface EventRepository extends MongoRepository<Event, String> {
+
+    List<Event> findByOrganizerId(String organizerId);
 }
