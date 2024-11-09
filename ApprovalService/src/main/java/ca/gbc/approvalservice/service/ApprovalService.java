@@ -15,5 +15,7 @@ public interface ApprovalService {
 
     Long updateApproval(Long id, ApprovalRequest approvalRequest);
 
+    void deleteUser(Long id);
+
     Optional<ApprovalResponse> getApprovalStatus(Long id);
 }

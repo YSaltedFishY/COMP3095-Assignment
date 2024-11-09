@@ -3,6 +3,7 @@ package ca.gbc.approvalservice.controller;
 import ca.gbc.approvalservice.dto.ApprovalRequest;
 import ca.gbc.approvalservice.dto.ApprovalResponse;
 import ca.gbc.approvalservice.service.ApprovalService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -12,21 +13,15 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/approval")
+@RequiredArgsConstructor
 public class ApprovalController {
 
-    private ApprovalService approvalService;
+    private final ApprovalService approvalService;
 
     @PostMapping("/approve")
     @ResponseStatus(HttpStatus.CREATED)
     public ResponseEntity<ApprovalResponse> approveEvent(@RequestBody ApprovalRequest request){
         ApprovalResponse response = approvalService.approveEvent(request);
-        return ResponseEntity.ok(response);
-    }
-
-    @PostMapping("/reject")
-    @ResponseStatus(HttpStatus.CREATED)
-    public ResponseEntity<ApprovalResponse> rejectEvent(@RequestBody ApprovalRequest request){
-        ApprovalResponse response = approvalService.rejectEvent(request);
         return ResponseEntity.ok(response);
     }
 
@@ -53,6 +48,12 @@ public class ApprovalController {
         headers.add("Location","/api/approvals/" + updateApprovalId);
 
         return new ResponseEntity<>(headers, HttpStatus.NO_CONTENT);
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<ApprovalResponse> deleteApproval(@PathVariable ("id") Long id){
+        approvalService.deleteUser(id);
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
 

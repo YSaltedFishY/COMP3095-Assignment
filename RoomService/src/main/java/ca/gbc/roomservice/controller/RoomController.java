@@ -74,4 +74,15 @@ public class RoomController {
         return new ResponseEntity<>( HttpStatus.NO_CONTENT);
 
     }
+
+    @DeleteMapping("/deleteeverything")
+    public ResponseEntity<RoomResponse> deleteAllRooms(){
+        roomService.deleteAllRooms();
+
+
+        return new ResponseEntity<>( HttpStatus.NO_CONTENT);
+
+    }
+
+
 }

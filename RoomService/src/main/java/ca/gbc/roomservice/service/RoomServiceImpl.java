@@ -90,4 +90,9 @@ public class RoomServiceImpl implements RoomService{
         roomRepository.deleteById(id);
 
     }
+
+    @Override
+    public void deleteAllRooms(){
+        roomRepository.deleteAll();
+    }
 }

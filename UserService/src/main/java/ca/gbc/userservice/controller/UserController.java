@@ -40,8 +40,6 @@ public class UserController {
     public List<UserResponse> getAllUsers(){
         return userService.getAllUsers();
     }
-
-
     @PutMapping("/{userId}")
     public ResponseEntity<UserResponse> updateUser(@PathVariable ("userId") Long userId, @RequestBody UserRequest userRequest){
         //log.debug("userUpdating");
@@ -56,6 +54,19 @@ public class UserController {
     @DeleteMapping("/{userId}")
     public ResponseEntity<UserResponse> deleteUser(@PathVariable ("userId") Long userId){
         userService.deleteUser(userId);
+        return new ResponseEntity<>( HttpStatus.NO_CONTENT);
+
+    }
+    @GetMapping("/approve/{userId}")
+    @ResponseStatus(HttpStatus.OK)
+    public Boolean checkIfUserStaff(@PathVariable ("userId") Long userId){
+        return userService.checkUserStaff(userId);
+    }
+
+    @DeleteMapping("/deleteeverything")
+    @ResponseStatus(HttpStatus.OK)
+    public ResponseEntity<UserResponse> deleteAll(){
+        userService.deleteAllUsers();
         return new ResponseEntity<>( HttpStatus.NO_CONTENT);
 
     }

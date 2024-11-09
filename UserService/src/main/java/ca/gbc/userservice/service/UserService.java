@@ -10,11 +10,11 @@ public interface UserService {
     UserResponse createUser(UserRequest userRequest);
 
     List<UserResponse> getAllUsers();
-    //List<RoomResponse> getAvailableRooms();
 
-//    Boolean checkRoomAvailability(Long id);
 
     Long updateUser(Long id, UserRequest userRequest);
 
     void deleteUser(Long id);
+    Boolean checkUserStaff(Long id);
+    void deleteAllUsers();
 }

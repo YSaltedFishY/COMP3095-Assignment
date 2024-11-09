@@ -16,4 +16,6 @@ public interface RoomService {
     Long updateRoom(Long id, RoomRequest roomRequest);
 
     void deleteRoom(Long id);
+
+    void deleteAllRooms();
 }
