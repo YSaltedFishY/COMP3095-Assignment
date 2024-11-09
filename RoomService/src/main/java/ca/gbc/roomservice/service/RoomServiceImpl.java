@@ -4,8 +4,10 @@ import ca.gbc.roomservice.dto.RoomRequest;
 import ca.gbc.roomservice.dto.RoomResponse;
 import ca.gbc.roomservice.model.Room;
 import ca.gbc.roomservice.repository.RoomRepository;
+import jakarta.persistence.NamedQuery;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -84,6 +86,15 @@ public class RoomServiceImpl implements RoomService{
         }
         return id;
     }
+    public Long updateAvailability(Long id, Boolean availabile) {
+        Room roomToUpdate = (Room)this.roomRepository.getReferenceById(id);
+        if (roomToUpdate != null) {
+            roomToUpdate.setAvailability(availabile);
+            return ((Room)this.roomRepository.save(roomToUpdate)).getId();
+        } else {
+            return id;
+        }
+    }
 
     @Override
     public void deleteRoom(Long id) {
@@ -95,4 +106,5 @@ public class RoomServiceImpl implements RoomService{
     public void deleteAllRooms(){
         roomRepository.deleteAll();
     }
+
 }

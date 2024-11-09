@@ -46,7 +46,7 @@ services:
     image: mongo
     container_name: bookingservice-mongodb
     ports:
-      - "1971:1971"
+      - "27017:27017"
     environment:
       MONGO_INITDB_ROOT_DATABASE: booking-service
       MONGO_INITDB_ROOT_USERNAME: admin  # Set the root username

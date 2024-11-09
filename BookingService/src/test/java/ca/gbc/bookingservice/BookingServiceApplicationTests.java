@@ -35,7 +35,7 @@ class BookingServiceApplicationTests {
         //define request body, multiline requesst
         //restassured.given .body .when .post (endpoint yore querying).
         // . endpoint. then whatever the response gives back
-        // i need to stup a mock request
+        // i need to stub a mock request
 
         // a service, stubs ar fake endpoint. that is a stun you mock.
 

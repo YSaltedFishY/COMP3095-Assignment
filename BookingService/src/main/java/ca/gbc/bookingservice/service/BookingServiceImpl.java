@@ -20,15 +20,12 @@ import java.util.List;
 @RequiredArgsConstructor
 public class BookingServiceImpl implements BookingService {
     private final BookingRepository bookingRepository;
-    private final RoomServiceClient roomServiceClient;
     private final MongoTemplate mongoTemplate;
 
     @Override
     public BookingResponse createBooking(BookingRequest bookingRequest) {
         //TODO: Validate
-        List<RoomResponse> availableRooms =roomServiceClient.getBookingDetails();
 
-        if(availableRooms.contains(bookingRequest.roomId()));
         // Create a new Booking object
         Booking booking = Booking.builder()
                 .bookingId(bookingRequest.bookingId())

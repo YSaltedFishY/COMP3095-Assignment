@@ -38,8 +38,10 @@ public class BookingController {
                         && room.availability());
 
         if(isBookingIdAvailableAndRoomAvailable){
+
             HttpHeaders headers = new HttpHeaders();
             headers.add("Location", "/api/booking/" + createdBooking.bookingId());
+
 
             return ResponseEntity.status(HttpStatus.CREATED)
                     .headers(headers)
