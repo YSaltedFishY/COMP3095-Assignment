@@ -1,24 +1,19 @@
 package ca.gbc.userservice.model;
 
 import jakarta.persistence.*;
-//import jakarta.validation.constraints.NotBlank;
 import lombok.*;
-import ca.gbc.userservice.model.UserType;
-
-import java.math.BigDecimal;
 
 @Entity
-@Table(name="t_users") //class names single, table plural
+@Table(name="t_users")
 @Getter
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-
 public class User {
+
     @Id
-    //underlying orm will rely on postgres to take care of it
-    @GeneratedValue(strategy = GenerationType.IDENTITY) //autoincrement
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     //@NotBlank
@@ -29,6 +24,4 @@ public class User {
     @Enumerated(EnumType.STRING)
     private UserType user_type;
     private String role;
-
-};
-
+}
