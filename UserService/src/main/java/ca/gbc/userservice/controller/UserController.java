@@ -2,6 +2,7 @@ package ca.gbc.userservice.controller;
 
 import ca.gbc.userservice.dto.UserRequest;
 import ca.gbc.userservice.dto.UserResponse;
+import ca.gbc.userservice.model.User;
 import ca.gbc.userservice.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpHeaders;
@@ -59,15 +60,18 @@ public class UserController {
     }
     @GetMapping("/approve/{userId}")
     @ResponseStatus(HttpStatus.OK)
-    public Boolean checkIfUserStaff(@PathVariable ("userId") Long userId){
+    public Boolean checkIfUserStaff( @PathVariable ("userId") Long userId){
         return userService.checkUserStaff(userId);
     }
-
     @DeleteMapping("/deleteeverything")
     @ResponseStatus(HttpStatus.OK)
     public ResponseEntity<UserResponse> deleteAll(){
-        userService.deleteAllUsers();
+         userService.deleteAllUsers();
         return new ResponseEntity<>( HttpStatus.NO_CONTENT);
 
     }
+
+
+
+
 }

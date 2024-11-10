@@ -1,13 +1,16 @@
 #updates with every new container-all the containers
 
+
 #docker-compose -p comp3095-microservices-assignment01 -f docker-compose.yml up -d --build
 # start containers in detached mode
 #docker-compose -p comp3095-microservices-assignment01 -f docker-compose.yml up -d --build
+
 #version: '3.9'
 
 #to add order-service, have to create integration tests by yourelf
 
 services:
+
 
   room-service:
     image: room-service
@@ -106,6 +109,7 @@ services:
       - POSTGRES_USER=admin
       - POSTGRES_PASSWORD=password
       - POSTGRES_DB=postgres-room-services
+
     volumes:
       - ./data/room:/var/lib/postgresql/data
       - ./init/room/init.sql:/docker-entrypoint-initdb.d/init.sql
@@ -119,6 +123,7 @@ services:
     environment:
       - POSTGRES_USER=admin
       - POSTGRES_PASSWORD=password
+
       - POSTGRES_DB=postgres-user-services
     volumes:
       - ./data/user:/var/lib/postgresql/data
@@ -150,6 +155,7 @@ services:
       - ./data/event:/var/lib/postgresql/data
       - ./init/event/init.sql:/docker-entrypoint-initdb.d/init.sql
 
+
   #GUI
   pgadmin:
     image: dpage/pgadmin4
@@ -177,7 +183,7 @@ services:
     image: mongo-express:latest
     container_name: mongo-express-event
     ports:
-      - "8082:8081"
+      - "8089:8081"
     environment:
       - ME_CONFIG_MONGODB_ADMINUSERNAME=admin
       - ME_CONFIG_MONGODB_ADMINPASSWORD=password
@@ -198,6 +204,7 @@ services:
     command: mongod --auth
     volumes:
       - ./data/booking:/data/db  # Volume for persistent data storage
+
   eventservice-mongodb:
     image: mongo
     container_name: eventservice-mongodb
@@ -210,7 +217,6 @@ services:
     command: mongod --auth
     volumes:
       - ./data/event:/data/db  # Volume for persistent data storage
-
 
 volumes:
   postgres:

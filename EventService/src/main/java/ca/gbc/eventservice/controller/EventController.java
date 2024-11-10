@@ -3,6 +3,9 @@ package ca.gbc.eventservice.controller;
 
 import ca.gbc.eventservice.dto.EventRequest;
 import ca.gbc.eventservice.dto.EventResponse;
+
+import ca.gbc.eventservice.service.EventService;
+
 import ca.gbc.eventservice.service.EventServiceImpl;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpHeaders;
@@ -18,7 +21,9 @@ import java.util.List;
 @RequiredArgsConstructor
 public class EventController {
 
-    private final EventServiceImpl eventService;
+
+    private final EventService eventService;
+
 
 
     @PostMapping
@@ -47,7 +52,9 @@ public class EventController {
     @GetMapping("/{bookingId}")
     @ResponseStatus(HttpStatus.OK)
     public EventResponse getEventByBookingId(@PathVariable("bookingId") String bookingId){
-        return eventService.getEventWithBookingId(bookingId);
+
+         return eventService.getEventWithBookingId(bookingId);
+
     }
 
     @PutMapping("/{eventId}")
@@ -66,6 +73,7 @@ public class EventController {
         eventService.deleteEvent(eventId);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
+
 
     @GetMapping("/{id}")
     public EventResponse getEventById(@PathVariable String id) {
