@@ -1,0 +1,220 @@
+#updates with every new container-all the containers
+
+#docker-compose -p comp3095-microservices-assignment01 -f docker-compose.yml up -d --build
+# start containers in detached mode
+#docker-compose -p comp3095-microservices-assignment01 -f docker-compose.yml up -d --build
+#version: '3.9'
+
+#to add order-service, have to create integration tests by yourelf
+
+services:
+
+  room-service:
+    image: room-service
+    ports:
+      - "8082:8082"
+    build:
+      context: ./RoomService
+      dockerfile: ./Dockerfile
+    container_name: room-service
+    depends_on:
+      - postgres-room
+    environment:
+      SPRING_PROFILES_ACTIVE: docker
+#      - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres-approval:5432/postgres-room-services
+#      - SPRING_DATASOURCE_USERNAME=admin
+#      - SPRING_DATASOURCE_PASSWORD=password
+    networks:
+      - spring
+
+  user-service:
+    image: user-service
+    ports:
+      - "8084:8084"
+    build:
+      context: ./UserService
+      dockerfile: ./Dockerfile
+    container_name: user-service
+    depends_on:
+      - postgres-user
+    environment:
+      SPRING_PROFILES_ACTIVE: docker
+#      - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres-approval:5432/postgres-user-services
+#      - SPRING_DATASOURCE_USERNAME=admin
+#      - SPRING_DATASOURCE_PASSWORD=password
+    networks:
+      - spring
+
+
+  booking-service:
+    image: booking-service
+    #ports match with Dockerfile
+    ports:
+      - "8080:8080"
+    build:
+      context: ./BookingService
+      dockerfile: ./Dockerfile
+    container_name: booking-service
+    environment:
+      SPRING_PROFILES_ACTIVE: docker
+    depends_on:
+      - mongo-express-booking
+    networks:
+      - spring
+
+  event-service:
+    image: event-service
+    #ports match with Dockerfile
+    ports:
+      - "8083:8083"
+    build:
+      context: ./EventService
+      dockerfile: ./Dockerfile
+    container_name: event-service
+    environment:
+      SPRING_PROFILES_ACTIVE: docker
+    depends_on:
+      - mongo-express-event
+    networks:
+      - spring
+
+  approval-service:
+    image: approval-service
+    ports:
+      - "8085:8085"
+    build:
+      context: ./ApprovalService
+      dockerfile: ./Dockerfile
+    container_name: approval-service
+    depends_on:
+      - postgres-approval
+    environment:
+      SPRING_PROFILES_ACTIVE: docker
+#      - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres-approval:5432/postgres-approval-services
+#      - SPRING_DATASOURCE_USERNAME=admin
+#      - SPRING_DATASOURCE_PASSWORD=password
+    networks:
+      - spring
+
+  #run text file that instantiates images
+  postgres-room:
+    image: postgres
+    ports:
+      - "5433:5432"
+    container_name: postgres-room
+    environment:
+      - POSTGRES_USER=admin
+      - POSTGRES_PASSWORD=password
+      - POSTGRES_DB=postgres-room-services
+    volumes:
+      - ./data/room:/var/lib/postgresql/data
+      - ./init/room/init.sql:/docker-entrypoint-initdb.d/init.sql
+    #docker-compose -p postgres-inventory-single -f docker-compose-multiple.yml up -d
+    #no network bc local
+  postgres-user:
+    image: postgres
+    ports:
+      - "5434:5432"
+    container_name: postgres-user
+    environment:
+      - POSTGRES_USER=admin
+      - POSTGRES_PASSWORD=password
+      - POSTGRES_DB=postgres-user-services
+    volumes:
+      - ./data/user:/var/lib/postgresql/data
+      - ./init/user/init.sql:/docker-entrypoint-initdb.d/init.sql
+
+  postgres-approval:
+    image: postgres
+    ports:
+      - "5435:5432"
+    container_name: postgres-approval
+    environment:
+      - POSTGRES_USER=admin
+      - POSTGRES_PASSWORD=password
+      - POSTGRES_DB=postgres-approval-services
+    volumes:
+      - ./data/approval:/var/lib/postgresql/data
+      - ./init/approval/init.sql:/docker-entrypoint-initdb.d/init.sql
+
+  postgres-event:
+    image: postgres
+    ports:
+      - "5436:5432"
+    container_name: postgres-event
+    environment:
+      - POSTGRES_USER=admin
+      - POSTGRES_PASSWORD=password
+      - POSTGRES_DB=postgres-approval-services
+    volumes:
+      - ./data/event:/var/lib/postgresql/data
+      - ./init/event/init.sql:/docker-entrypoint-initdb.d/init.sql
+
+  #GUI
+  pgadmin:
+    image: dpage/pgadmin4
+    ports:
+      - "8888:80"
+    container_name: pgadmin-inter-service
+    environment:
+      - PGADMIN_DEFAULT_EMAIL=user@domain.ca
+      - PGADMIN_DEFAULT_PASSWORD=password
+
+  # Mongo Express for MongoDB 1
+  mongo-express-booking:
+    image: mongo-express:latest
+    container_name: mongo-express-booking
+    ports:
+      - "8081:8081"
+    environment:
+      - ME_CONFIG_MONGODB_ADMINUSERNAME=admin
+      - ME_CONFIG_MONGODB_ADMINPASSWORD=password
+      - ME_CONFIG_MONGODB_SERVER=bookingservice-mongodb
+    depends_on:
+      - bookingservice-mongodb
+  #2
+  mongo-express-event:
+    image: mongo-express:latest
+    container_name: mongo-express-event
+    ports:
+      - "8082:8081"
+    environment:
+      - ME_CONFIG_MONGODB_ADMINUSERNAME=admin
+      - ME_CONFIG_MONGODB_ADMINPASSWORD=password
+      - ME_CONFIG_MONGODB_SERVER=eventservice-mongodb
+    depends_on:
+      - eventservice-mongodb
+
+  #mongodb containers
+  bookingservice-mongodb:
+    image: mongo
+    container_name: bookingservice-mongodb
+    ports:
+      - "27017:27017"
+    environment:
+      MONGO_INITDB_ROOT_DATABASE: booking-service
+      MONGO_INITDB_ROOT_USERNAME: admin  # Set the root username
+      MONGO_INITDB_ROOT_PASSWORD: password  # Set the root password
+    command: mongod --auth
+    volumes:
+      - ./data/booking:/data/db  # Volume for persistent data storage
+  eventservice-mongodb:
+    image: mongo
+    container_name: eventservice-mongodb
+    ports:
+      - "27018:27017"
+    environment:
+      MONGO_INITDB_ROOT_DATABASE: event-service
+      MONGO_INITDB_ROOT_USERNAME: admin  # Set the root username
+      MONGO_INITDB_ROOT_PASSWORD: password  # Set the root password
+    command: mongod --auth
+    volumes:
+      - ./data/event:/data/db  # Volume for persistent data storage
+
+
+volumes:
+  postgres:
+    driver: local # use local driver to persist data on the host
+networks:
+  spring:
+    driver: bridge # bridge allows isolated communication between containers

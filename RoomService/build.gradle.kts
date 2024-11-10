@@ -23,7 +23,7 @@ repositories {
 	mavenCentral()
 }
 
-tasks.register("prepareKotlinBuildScriptModel"){}
+//tasks.register("prepareKotlinBuildScriptModel"){}
 
 dependencies {
 	implementation("org.springframework.boot:spring-boot-starter-actuator")

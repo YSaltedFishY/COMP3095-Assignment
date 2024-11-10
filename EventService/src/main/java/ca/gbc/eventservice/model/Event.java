@@ -15,10 +15,13 @@ public class Event {
 
     @Id
     private String id;
+
     private String eventName;
     private String organizerId;
     private String eventType;
     private int expectedAttendees;
-    private String roomId;
+    private Long roomId;
+
+    private String bookingId;
 
 }

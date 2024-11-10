@@ -26,6 +26,8 @@ public class EventController {
     public ResponseEntity<EventResponse> createEvent(@RequestBody EventRequest eventRequest) {
         EventResponse createdEvent = eventService.createEvent(eventRequest);
 
+
+
         HttpHeaders headers = new HttpHeaders();
         headers.add("Location", "/api/event/" + createdEvent.organizerId());
 
@@ -40,6 +42,12 @@ public class EventController {
     public List<EventResponse> getAllEvents() {
         return eventService.getAllEvents();
 
+    }
+
+    @GetMapping("/{bookingId}")
+    @ResponseStatus(HttpStatus.OK)
+    public EventResponse getEventByBookingId(@PathVariable("bookingId") String bookingId){
+        return eventService.getEventWithBookingId(bookingId);
     }
 
     @PutMapping("/{eventId}")
@@ -57,6 +65,17 @@ public class EventController {
 
         eventService.deleteEvent(eventId);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+    }
+
+    @GetMapping("/{id}")
+    public EventResponse getEventById(@PathVariable String id) {
+        return eventService.getEventById(id);
+    }
+
+    @GetMapping("/exists/{id}")
+    @ResponseStatus(HttpStatus.OK)
+    public boolean checkEventExists(@PathVariable String id){
+        return eventService.eventExist(id);
     }
 
 }

@@ -1,8 +1,10 @@
 package ca.gbc.approvalservice.service;
 
+import ca.gbc.approvalservice.client.EventServiceClient;
 import ca.gbc.approvalservice.client.UserServiceClient;
 import ca.gbc.approvalservice.dto.ApprovalRequest;
 import ca.gbc.approvalservice.dto.ApprovalResponse;
+import ca.gbc.approvalservice.dto.EventResponse;
 import ca.gbc.approvalservice.model.Approval;
 import ca.gbc.approvalservice.repository.ApprovalRepository;
 import lombok.RequiredArgsConstructor;
@@ -24,6 +26,7 @@ public class ApprovalServiceImpl implements ApprovalService {
 
     private final ApprovalRepository approvalRepository;
     private final UserServiceClient userServiceClient;
+    private final EventServiceClient eventServiceClient;
 
     @Override
     public ApprovalResponse approveEvent(ApprovalRequest approvalRequest) {
@@ -70,6 +73,8 @@ public class ApprovalServiceImpl implements ApprovalService {
     }
 
 
+
+
     @Override
     public Long updateApproval(Long id, ApprovalRequest approvalRequest) {
         Approval updateApproval = approvalRepository.findById(id).orElse(null);
@@ -81,6 +86,10 @@ public class ApprovalServiceImpl implements ApprovalService {
         }
 
         return id;
+    }
+
+    public EventResponse fetchEventDetails(String eventId){
+        return eventServiceClient.getEventById(eventId);
     }
 
     @Override

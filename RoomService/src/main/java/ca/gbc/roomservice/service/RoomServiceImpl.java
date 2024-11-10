@@ -95,4 +95,15 @@ public class RoomServiceImpl implements RoomService{
     public void deleteAllRooms(){
         roomRepository.deleteAll();
     }
+
+    @Override
+    public Long updateAvailability(Long id, Boolean availabile) {
+        Room roomToUpdate = (Room)this.roomRepository.getReferenceById(id);
+        if (roomToUpdate != null) {
+            roomToUpdate.setAvailability(availabile);
+            return ((Room)this.roomRepository.save(roomToUpdate)).getId();
+        } else {
+            return id;
+        }
+    }
 }

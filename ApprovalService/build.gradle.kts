@@ -23,7 +23,7 @@ repositories {
 	mavenCentral()
 }
 
-tasks.register("prepareKotlinBuildScriptModel"){}
+//tasks.register("prepareKotlinBuildScriptModel"){}
 
 dependencies {
 	implementation("org.springframework.cloud:spring-cloud-starter-openfeign:4.1.3")

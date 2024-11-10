@@ -4,7 +4,7 @@ import java.time.LocalDateTime;
 
 public record ApprovalResponse(
         Long Id,
-        Long eventId,
+        String eventId,
         Long userId,
         String status,
         LocalDateTime time

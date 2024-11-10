@@ -11,13 +11,11 @@ public interface EventService {
 
     List<EventResponse> getAllEvents();
 
-    List<EventResponse> getUserEvents(String userId);
+    EventResponse getEventWithBookingId(String bookingId);
 
     String updateEvent(String EventId, EventRequest eventRequest);
 
     EventResponse deleteEvent(String eventId);
-
-
 
 }
 

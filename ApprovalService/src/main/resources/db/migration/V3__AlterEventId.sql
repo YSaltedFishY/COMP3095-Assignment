@@ -1,0 +1,2 @@
+ALTER TABLE t_approvals
+ALTER COLUMN event_id TYPE VARCHAR(255);

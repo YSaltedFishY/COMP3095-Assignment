@@ -1,7 +1,7 @@
 package ca.gbc.approvalservice.dto;
 
 public record ApprovalRequest(
-        Long eventId,
+        String eventId,
         Long userId,
         String status
 ) {

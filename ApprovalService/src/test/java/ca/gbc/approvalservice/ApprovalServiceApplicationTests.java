@@ -38,7 +38,7 @@ class ApprovalServiceApplicationTests {
 	void createApprovalRequestTest() {
 		String requestBody = """
                 {
-                    "userId": 2,
+                    "userId": 123,
                     "eventId": 456
                 }
                 """;
@@ -54,7 +54,7 @@ class ApprovalServiceApplicationTests {
 				.log().all()
 				.statusCode(201)
 				.body("id", Matchers.notNullValue())
-				.body("userId", Matchers.equalTo(2))
+				.body("userId", Matchers.equalTo(123))
 				.body("eventId", Matchers.equalTo(456))
 				.body("status", Matchers.equalTo("APPROVED"));
 

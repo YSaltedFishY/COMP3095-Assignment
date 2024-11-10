@@ -1,6 +1,6 @@
 #------Build--------
 #doceker file uses gradle 8
-FROM gradle:8-jdk21-alpine AS builder
+FROM gradle:8-jdk-21-and-22-alpine AS builder
 
 #copy all files to /home/gradle/src
 #COPY --chown=gradle:gradle product-service /home/gradle/src

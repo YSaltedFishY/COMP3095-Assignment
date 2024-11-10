@@ -1,6 +1,6 @@
 #------Build--------
 #doceker file uses gradle 8
-FROM gradle:8-jdk21-alpine AS builder
+FROM gradle:8-jdk-21-and-22-alpine AS builder
 
 #copy all files to /home/gradle/src
 #COPY --chown=gradle:gradle product-service /home/gradle/src
@@ -21,9 +21,9 @@ RUN mkdir /app
 COPY --from=builder /home/gradle/src/build/libs/*.jar /app/room-service.jar
 
 #
-ENV POSTGRES_USER=admin
+ENV POSTGRES_USER=admin \
     POSTGRES_PWD=password
 #expose point 8084 of our container
-EXPOSE 8084
+EXPOSE 8082
 
 ENTRYPOINT ["java", "-jar", "/app/room-service.jar"]
