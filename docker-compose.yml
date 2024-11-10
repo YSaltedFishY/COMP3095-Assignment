@@ -82,6 +82,7 @@ services:
     command: mongod --auth
     volumes:
       - ./data/booking:/data/db  # Volume for persistent data storage
+
   eventservice-mongodb:
     image: mongo
     container_name: eventservice-mongodb
