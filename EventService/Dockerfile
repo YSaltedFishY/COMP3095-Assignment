@@ -28,3 +28,4 @@ ENV MONGO_DB_INIT_USERNAME=admin \
     MONGO_DB_INIT_PASSWORD=password
 #expose point 8084 of our container
 EXPOSE 8086
+

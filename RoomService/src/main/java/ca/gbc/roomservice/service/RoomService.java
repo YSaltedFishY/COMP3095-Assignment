@@ -20,5 +20,5 @@ public interface RoomService {
     Long updateAvailability(Long id, Boolean available);
 
     void deleteAllRooms();
-
+  
 }

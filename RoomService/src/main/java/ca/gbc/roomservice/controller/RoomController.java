@@ -66,6 +66,7 @@ public class RoomController {
         return new ResponseEntity<>(headers, HttpStatus.NO_CONTENT);
 
     }
+  
     @PutMapping("/available/{roomId}")
     public ResponseEntity<RoomResponse> updateAvailability(@PathVariable ("roomId") Long roomId,@RequestBody Boolean bool){
         Long updatedRoomId=roomService.updateAvailability(roomId, bool);
