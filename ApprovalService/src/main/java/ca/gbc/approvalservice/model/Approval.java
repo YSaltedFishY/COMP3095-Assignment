@@ -20,7 +20,7 @@ public class Approval {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private Long eventId;
+    private String eventId;
     private Long userId;
     private String status; //PENDING APPROVED REJECTED
     private LocalDateTime time;

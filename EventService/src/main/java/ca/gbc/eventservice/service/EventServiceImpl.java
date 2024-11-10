@@ -1,6 +1,6 @@
 package ca.gbc.eventservice.service;
 
-import ca.gbc.approvalservice.client.UserServiceClient;
+
 import ca.gbc.bookingservice.dto.BookingRequest;
 import ca.gbc.bookingservice.dto.BookingResponse;
 import ca.gbc.bookingservice.model.Booking;
@@ -11,6 +11,7 @@ import ca.gbc.eventservice.model.Event;
 import ca.gbc.eventservice.repository.EventRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -29,7 +30,6 @@ public class EventServiceImpl implements EventService {
     @Override
     public EventResponse createEvent(EventRequest eventRequest) {
         log.debug("Creating a new event");
-
 
         try {
             Booking booking = Booking.builder()
@@ -65,7 +65,6 @@ public class EventServiceImpl implements EventService {
 
         // Save the event to the repository
 
-
     }
 
     @Override
@@ -77,7 +76,6 @@ public class EventServiceImpl implements EventService {
         return events.stream()
                 .map(this::mapToEventResponse).toList();
     }
-
 
     @Override
     public String updateEvent(String eventId, EventRequest eventRequest) {
@@ -99,6 +97,7 @@ public class EventServiceImpl implements EventService {
                 var savedbooking = bookingServiceClient.updateBooking(booking.getBookingId(), new BookingRequest(
                        booking.getBookingId(), booking.getUserId(), booking.getRoomId(), booking.getStartTime(), booking.getEndTime(), booking.getPurpose()
                 ));
+
                 event = Event.builder()
                         .id(event.getId())
                         .eventName(eventRequest.eventName())
@@ -109,6 +108,7 @@ public class EventServiceImpl implements EventService {
                         .bookingId(booking.getBookingId())
                         .build();
             } catch (IllegalArgumentException e) {
+
                 throw new IllegalArgumentException("Room cannot be booked during this time period, no event was created");
 
             }
@@ -146,6 +146,7 @@ public class EventServiceImpl implements EventService {
         return mapToEventResponse(event);
     }
 
+
     private EventResponse mapToEventResponse(Event event) {
         return new EventResponse(
                 event.getId(),
@@ -165,4 +166,5 @@ public class EventServiceImpl implements EventService {
         return bookingServiceClient.createBooking(bookingRequest);
 
     }
+
 }

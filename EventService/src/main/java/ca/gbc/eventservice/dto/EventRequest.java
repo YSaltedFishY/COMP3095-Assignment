@@ -2,6 +2,7 @@ package ca.gbc.eventservice.dto;
 
 import java.util.Date;
 
+
 public record EventRequest(
         String id,
         String eventName,
@@ -17,6 +18,7 @@ public record EventRequest(
         Date endTime,
         String purpose
 ) {
+
 
 
 }

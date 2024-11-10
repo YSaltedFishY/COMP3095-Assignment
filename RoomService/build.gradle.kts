@@ -23,7 +23,7 @@ repositories {
 	mavenCentral()
 }
 
-tasks.register("prepareKotlinBuildScriptModel"){}
+//tasks.register("prepareKotlinBuildScriptModel"){}
 
 dependencies {
 	implementation("org.springframework.boot:spring-boot-starter-actuator")
@@ -40,6 +40,7 @@ dependencies {
 	testImplementation("org.testcontainers:junit-jupiter")
 	testImplementation("org.testcontainers:postgresql")
 	testRuntimeOnly("org.junit.platform:junit-platform-launcher")
+	testImplementation("io.rest-assured:rest-assured:5.5.0")
 }
 
 tasks.withType<Test> {

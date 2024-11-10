@@ -1,13 +1,104 @@
 #updates with every new container-all the containers
 
-#docker-compose -p comp3095-microservices-ecommerce -f docker-compose-single.yml up -d --build
+
+#docker-compose -p comp3095-microservices-assignment01 -f docker-compose.yml up -d --build
 # start containers in detached mode
-#docker-compose -p comp3095-microservices-ecommerce -f docker-compose-single.yml up -d --build
+#docker-compose -p comp3095-microservices-assignment01 -f docker-compose.yml up -d --build
+
 #version: '3.9'
 
 #to add order-service, have to create integration tests by yourelf
 
 services:
+
+
+  room-service:
+    image: room-service
+    ports:
+      - "8082:8082"
+    build:
+      context: ./RoomService
+      dockerfile: ./Dockerfile
+    container_name: room-service
+    depends_on:
+      - postgres-room
+    environment:
+      SPRING_PROFILES_ACTIVE: docker
+#      - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres-approval:5432/postgres-room-services
+#      - SPRING_DATASOURCE_USERNAME=admin
+#      - SPRING_DATASOURCE_PASSWORD=password
+    networks:
+      - spring
+
+  user-service:
+    image: user-service
+    ports:
+      - "8084:8084"
+    build:
+      context: ./UserService
+      dockerfile: ./Dockerfile
+    container_name: user-service
+    depends_on:
+      - postgres-user
+    environment:
+      SPRING_PROFILES_ACTIVE: docker
+#      - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres-approval:5432/postgres-user-services
+#      - SPRING_DATASOURCE_USERNAME=admin
+#      - SPRING_DATASOURCE_PASSWORD=password
+    networks:
+      - spring
+
+
+  booking-service:
+    image: booking-service
+    #ports match with Dockerfile
+    ports:
+      - "8080:8080"
+    build:
+      context: ./BookingService
+      dockerfile: ./Dockerfile
+    container_name: booking-service
+    environment:
+      SPRING_PROFILES_ACTIVE: docker
+    depends_on:
+      - mongo-express-booking
+    networks:
+      - spring
+
+  event-service:
+    image: event-service
+    #ports match with Dockerfile
+    ports:
+      - "8083:8083"
+    build:
+      context: ./EventService
+      dockerfile: ./Dockerfile
+    container_name: event-service
+    environment:
+      SPRING_PROFILES_ACTIVE: docker
+    depends_on:
+      - mongo-express-event
+    networks:
+      - spring
+
+  approval-service:
+    image: approval-service
+    ports:
+      - "8085:8085"
+    build:
+      context: ./ApprovalService
+      dockerfile: ./Dockerfile
+    container_name: approval-service
+    depends_on:
+      - postgres-approval
+    environment:
+      SPRING_PROFILES_ACTIVE: docker
+#      - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres-approval:5432/postgres-approval-services
+#      - SPRING_DATASOURCE_USERNAME=admin
+#      - SPRING_DATASOURCE_PASSWORD=password
+    networks:
+      - spring
+
   #run text file that instantiates images
   postgres-room:
     image: postgres
@@ -17,6 +108,8 @@ services:
     environment:
       - POSTGRES_USER=admin
       - POSTGRES_PASSWORD=password
+      - POSTGRES_DB=postgres-room-services
+
     volumes:
       - ./data/room:/var/lib/postgresql/data
       - ./init/room/init.sql:/docker-entrypoint-initdb.d/init.sql
@@ -30,19 +123,48 @@ services:
     environment:
       - POSTGRES_USER=admin
       - POSTGRES_PASSWORD=password
+
+      - POSTGRES_DB=postgres-user-services
     volumes:
       - ./data/user:/var/lib/postgresql/data
       - ./init/user/init.sql:/docker-entrypoint-initdb.d/init.sql
+
+  postgres-approval:
+    image: postgres
+    ports:
+      - "5435:5432"
+    container_name: postgres-approval
+    environment:
+      - POSTGRES_USER=admin
+      - POSTGRES_PASSWORD=password
+      - POSTGRES_DB=postgres-approval-services
+    volumes:
+      - ./data/approval:/var/lib/postgresql/data
+      - ./init/approval/init.sql:/docker-entrypoint-initdb.d/init.sql
+
+  postgres-event:
+    image: postgres
+    ports:
+      - "5436:5432"
+    container_name: postgres-event
+    environment:
+      - POSTGRES_USER=admin
+      - POSTGRES_PASSWORD=password
+      - POSTGRES_DB=postgres-approval-services
+    volumes:
+      - ./data/event:/var/lib/postgresql/data
+      - ./init/event/init.sql:/docker-entrypoint-initdb.d/init.sql
+
+
   #GUI
   pgadmin:
     image: dpage/pgadmin4
     ports:
       - "8888:80"
-    container_name: pgadmin-room
+    container_name: pgadmin-inter-service
     environment:
       - PGADMIN_DEFAULT_EMAIL=user@domain.ca
       - PGADMIN_DEFAULT_PASSWORD=password
-
 
   # Mongo Express for MongoDB 1
   mongo-express-booking:

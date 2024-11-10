@@ -1,3 +1,6 @@
-rootProject.name = "comp3095a1-parent"
-
-include("UserService","RoomService","BookingService","ApprovalService","EventService")
+rootProject.name = "src"
+include(":RoomService")
+include(":ApprovalService")
+include(":UserService")
+include(":BookingService")
+include(":EventService")

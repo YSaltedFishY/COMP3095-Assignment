@@ -24,9 +24,9 @@ public class BookingServiceImpl implements BookingService {
 
     @Override
     public BookingResponse createBooking(BookingRequest bookingRequest) {
-
         // Create a new Booking object
         Booking booking = Booking.builder()
+
                 .userId(bookingRequest.userId())
                 .roomId(bookingRequest.roomId())
                 .startTime(bookingRequest.startTime())
@@ -34,7 +34,6 @@ public class BookingServiceImpl implements BookingService {
                 .purpose(bookingRequest.purpose())
                 .build();
         Booking savedBooking = bookingRepository.save(booking);
-
         return new BookingResponse(savedBooking.getBookingId(), savedBooking.getUserId(), savedBooking.getRoomId(),
                 savedBooking.getEndTime(), savedBooking.getStartTime(), savedBooking.getPurpose());
     }

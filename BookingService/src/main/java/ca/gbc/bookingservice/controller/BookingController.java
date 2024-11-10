@@ -1,6 +1,7 @@
 package ca.gbc.bookingservice.controller;
 
 
+
 import ca.gbc.bookingservice.client.RoomServiceClient;
 import ca.gbc.bookingservice.dto.BookingRequest;
 import ca.gbc.bookingservice.dto.BookingResponse;
@@ -24,13 +25,16 @@ public class BookingController {
     private final RoomServiceClient roomServiceClient;
 
 
+
     private final BookingService bookingService;
+
 
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     public ResponseEntity<BookingResponse> createBooking(@RequestBody BookingRequest bookingRequest) {
         BookingResponse createdBooking = bookingService.createBooking(bookingRequest);
+
         Boolean availability =roomServiceClient.checkRoomAvailability(bookingRequest.roomId());
 
 
@@ -50,7 +54,6 @@ public class BookingController {
         }else{
             throw new IllegalArgumentException("Cannot book a room at this time");
         }
-
     }
 
     @GetMapping

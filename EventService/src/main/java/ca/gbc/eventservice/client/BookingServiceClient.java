@@ -14,4 +14,5 @@ public interface BookingServiceClient {
     @PutMapping("/api/booking/{bookingId}")
     ResponseEntity<BookingResponse> updateBooking(@PathVariable("bookingId") String bookingId,@RequestBody BookingRequest bookingRequest);
 
+
 }
