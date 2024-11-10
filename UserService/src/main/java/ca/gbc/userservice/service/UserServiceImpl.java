@@ -1,9 +1,9 @@
 package ca.gbc.userservice.service;
+import ca.gbc.userservice.model.UserType;
 
 import ca.gbc.userservice.dto.UserRequest;
 import ca.gbc.userservice.dto.UserResponse;
 import ca.gbc.userservice.model.User;
-import ca.gbc.userservice.model.UserType;
 import ca.gbc.userservice.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -15,6 +15,7 @@ import java.util.List;
 @Slf4j
 @RequiredArgsConstructor
 public class UserServiceImpl implements UserService{
+
     private final UserRepository userRepository;
 
 
@@ -82,7 +83,6 @@ public class UserServiceImpl implements UserService{
         User user = userRepository.getReferenceById(id);
         return user.getUser_type().equals(UserType.Staff);
     }
-
     public void deleteAllUsers() {
         userRepository.deleteAll();
     }

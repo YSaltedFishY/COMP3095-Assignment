@@ -1,10 +1,15 @@
 package ca.gbc.bookingservice.controller;
 
 
+
+import ca.gbc.bookingservice.client.RoomServiceClient;
 import ca.gbc.bookingservice.dto.BookingRequest;
 import ca.gbc.bookingservice.dto.BookingResponse;
+import ca.gbc.bookingservice.service.BookingService;
 import ca.gbc.bookingservice.service.BookingServiceImpl;
+import ca.gbc.roomservice.dto.RoomResponse;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -17,8 +22,12 @@ import java.util.List;
 @RequestMapping("/api/booking")
 @RequiredArgsConstructor
 public class BookingController {
+    private final RoomServiceClient roomServiceClient;
 
-    private final BookingServiceImpl bookingService;
+
+
+    private final BookingService bookingService;
+
 
 
     @PostMapping
@@ -26,13 +35,25 @@ public class BookingController {
     public ResponseEntity<BookingResponse> createBooking(@RequestBody BookingRequest bookingRequest) {
         BookingResponse createdBooking = bookingService.createBooking(bookingRequest);
 
-        HttpHeaders headers = new HttpHeaders();
-        headers.add("Location", "/api/booking/" + createdBooking.bookingId());
+        Boolean availability =roomServiceClient.checkRoomAvailability(bookingRequest.roomId());
 
-        return ResponseEntity.status(HttpStatus.CREATED)
-                .headers(headers)
-                .contentType(MediaType.APPLICATION_JSON)
-                .body(createdBooking);
+
+
+        if(availability){
+
+            roomServiceClient.updateAvailability(bookingRequest.roomId(),true);
+
+            HttpHeaders headers = new HttpHeaders();
+            headers.add("Location", "/api/booking/" + createdBooking.bookingId());
+
+
+            return ResponseEntity.status(HttpStatus.CREATED)
+                    .headers(headers)
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .body(createdBooking);
+        }else{
+            throw new IllegalArgumentException("Cannot book a room at this time");
+        }
     }
 
     @GetMapping

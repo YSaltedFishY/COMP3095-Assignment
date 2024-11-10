@@ -2,6 +2,7 @@ package ca.gbc.roomservice.controller;
 
 import ca.gbc.roomservice.dto.RoomRequest;
 import ca.gbc.roomservice.dto.RoomResponse;
+import ca.gbc.roomservice.model.Room;
 import ca.gbc.roomservice.service.RoomService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpHeaders;
@@ -16,7 +17,6 @@ import java.util.List;
 @RequestMapping("/api/room")
 @RequiredArgsConstructor
 public class RoomController {
-
     private final RoomService roomService;
 
     @PostMapping
@@ -66,15 +66,6 @@ public class RoomController {
         return new ResponseEntity<>(headers, HttpStatus.NO_CONTENT);
 
     }
-    @DeleteMapping("/{roomId}")
-    public ResponseEntity<RoomResponse> deleteRoom(@PathVariable ("roomId") Long roomId){
-        roomService.deleteRoom(roomId);
-
-
-        return new ResponseEntity<>( HttpStatus.NO_CONTENT);
-
-    }
-
     @PutMapping("/available/{roomId}")
     public ResponseEntity<RoomResponse> updateAvailability(@PathVariable ("roomId") Long roomId,@RequestBody Boolean bool){
         Long updatedRoomId=roomService.updateAvailability(roomId, bool);
@@ -83,6 +74,14 @@ public class RoomController {
         headers.add("Location","/api/room/available/"+updatedRoomId);
 
         return new ResponseEntity<>(headers, HttpStatus.NO_CONTENT);
+
+    }
+    @DeleteMapping("/{roomId}")
+    public ResponseEntity<RoomResponse> deleteRoom(@PathVariable ("roomId") Long roomId){
+        roomService.deleteRoom(roomId);
+
+
+        return new ResponseEntity<>( HttpStatus.NO_CONTENT);
 
     }
 
@@ -94,6 +93,7 @@ public class RoomController {
         return new ResponseEntity<>( HttpStatus.NO_CONTENT);
 
     }
+
 
 
 }

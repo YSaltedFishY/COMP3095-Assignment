@@ -20,18 +20,13 @@ import java.util.List;
 @RequiredArgsConstructor
 public class BookingServiceImpl implements BookingService {
     private final BookingRepository bookingRepository;
-    private final RoomServiceClient roomServiceClient;
     private final MongoTemplate mongoTemplate;
 
     @Override
     public BookingResponse createBooking(BookingRequest bookingRequest) {
-        //TODO: Validate
-        List<RoomResponse> availableRooms =roomServiceClient.getBookingDetails();
-
-        if(availableRooms.contains(bookingRequest.roomId()));
         // Create a new Booking object
         Booking booking = Booking.builder()
-                .bookingId(bookingRequest.bookingId())
+
                 .userId(bookingRequest.userId())
                 .roomId(bookingRequest.roomId())
                 .startTime(bookingRequest.startTime())
@@ -39,8 +34,7 @@ public class BookingServiceImpl implements BookingService {
                 .purpose(bookingRequest.purpose())
                 .build();
         Booking savedBooking = bookingRepository.save(booking);
-
-        return new BookingResponse(savedBooking.getBookingId(), savedBooking.getUserId(), savedBooking.getUserId(),
+        return new BookingResponse(savedBooking.getBookingId(), savedBooking.getUserId(), savedBooking.getRoomId(),
                 savedBooking.getEndTime(), savedBooking.getStartTime(), savedBooking.getPurpose());
     }
 
@@ -77,7 +71,6 @@ public class BookingServiceImpl implements BookingService {
         Booking booking = mongoTemplate.findOne(query, Booking.class);
 
         if (booking != null) {
-            booking.setBookingId(bookingRequest.bookingId());
             booking.setUserId(bookingRequest.userId()); //Could be changed
             booking.setRoomId(bookingRequest.roomId());
             booking.setStartTime(bookingRequest.startTime());
