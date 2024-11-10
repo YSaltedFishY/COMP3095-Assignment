@@ -198,6 +198,30 @@ services:
     networks:
       - spring
 
+  bookingservice-mongodb:
+    image: mongo
+    container_name: bookingservice-mongodb
+    ports:
+      - "27017:27017"
+    environment:
+      MONGO_INITDB_ROOT_DATABASE: booking-service
+      MONGO_INITDB_ROOT_USERNAME: admin
+      MONGO_INITDB_ROOT_PASSWORD: password
+    command: mongod --auth
+    volumes:
+      - ./data/booking:/data/db
+
+  #GUI for mongo
+  mongo-express:
+    image: mongo-express:latest
+    container_name: mongo-express
+    ports:
+      - "8081:8081"
+    environment:
+      - ME_CONFIG_MONGODB_ADMINUSERNAME=admin
+      - ME_CONFIG_MONGODB_ADMINPASSWORD=password
+      - ME_CONFIG_MONGODB_SERVER=bookingservice-mongodb
+
   # Mongo Express for MongoDB 1
   mongo-express-booking:
     image: mongo-express:latest
@@ -223,19 +247,6 @@ services:
     depends_on:
       - eventservice-mongodb
 
-  #mongodb containers
-  bookingservice-mongodb:
-    image: mongo
-    container_name: bookingservice-mongodb
-    ports:
-      - "27017:27017"
-    environment:
-      MONGO_INITDB_ROOT_DATABASE: booking-service
-      MONGO_INITDB_ROOT_USERNAME: admin  # Set the root username
-      MONGO_INITDB_ROOT_PASSWORD: password  # Set the root password
-    command: mongod --auth
-    volumes:
-      - ./data/booking:/data/db  # Volume for persistent data storage
   eventservice-mongodb:
     image: mongo
     container_name: eventservice-mongodb

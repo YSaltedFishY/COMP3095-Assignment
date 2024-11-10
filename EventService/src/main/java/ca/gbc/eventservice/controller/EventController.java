@@ -75,15 +75,4 @@ public class EventController {
     }
 
 
-    @GetMapping("/{id}")
-    public EventResponse getEventById(@PathVariable String id) {
-        return eventService.getEventById(id);
-    }
-
-    @GetMapping("/exists/{id}")
-    @ResponseStatus(HttpStatus.OK)
-    public boolean checkEventExists(@PathVariable String id){
-        return eventService.eventExist(id);
-    }
-
 }
