@@ -56,6 +56,39 @@ services:
       - spring
 
 
+  #Booking and Event
+
+  booking-service:
+    image: booking-service
+    ports:
+      - "8082:8082"
+    build:
+      context: ../booking-service
+      dockerfile: ./Dockerfile
+    container_name: booking-service
+    environment:
+      SPRING_PROFILES_ACTIVE: docker
+    depends_on:
+      - mongodb
+    networks:
+      - spring
+
+  event-service:
+    image: event-service
+    ports:
+      - "8084:8084"
+    build:
+      context: ../event-service
+      dockerfile: ./Dockerfile
+    container_name: event-service
+    environment:
+      SPRING_PROFILES_ACTIVE: docker
+    depends_on:
+      - mongodb
+    networks:
+      - spring
+
+
   #Postgres DB
 
   postgres-room:
@@ -103,37 +136,22 @@ services:
     networks:
       - spring
 
-  #Booking and Event
-
-  booking-service:
-    image: booking-service
+  postgres-keycloak:
+    image: postgres
     ports:
-      - "8082:8082"
-    build:
-      context: ../booking-service
-      dockerfile: ./Dockerfile
-    container_name: booking-service
+      - "5431:5432" #Postgres default
+    container_name: postgres-keycloak-a2
     environment:
-      SPRING_PROFILES_ACTIVE: docker
-    depends_on:
-      - mongodb
+      - POSTGRES_DB=keycloak
+      - POSTGRES_USER=admin
+      - POSTGRES_PASSWORD=password
+      - PGDATA=/data/postgres
+    volumes:
+      - ./data/postgres/keycloak:/var/lib/postgresql/data/
     networks:
       - spring
 
-  event-service:
-    image: event-service
-    ports:
-      - "8084:8084"
-    build:
-      context: ../event-service
-      dockerfile: ./Dockerfile
-    container_name: event-service
-    environment:
-      SPRING_PROFILES_ACTIVE: docker
-    depends_on:
-      - mongodb
-    networks:
-      - spring
+
 
 
 
@@ -179,6 +197,33 @@ services:
     environment:
       - PGADMIN_DEFAULT_EMAIL=admin@domain.ca
       - PGADMIN_DEFAULT_PASSWORD=password
+
+  #Keycloak
+  keycloak:
+    container_name: keycloak-a2
+    hostname: keycloak
+    image: quay.io/keycloak/keycloak:24.0.1
+    command: [ "start-dev", "--import-realm" ]
+    environment:
+      DB_VENDOR: postgres
+      DB_ADDR: postgres-keycloak
+      DB_DATABASE: keycloak
+      DB_USER: admin
+      DB_PASSWORD: password
+      KEYCLOAK_ADMIN: admin
+      KEYCLOAK_ADMIN_PASSWORD: password
+      ROOT_LOGLEVEL: DEBUG
+      JBOSS_LOG_MANAGER_ROOT_LOGGER: DEBUG, stdout, FILE
+    ports:
+      - "8080:8080"
+    volumes:
+      - ./realms/:/opt/keycloak/data/import
+    depends_on:
+      - postgres-keycloak
+    networks:
+      - spring
+
+
 
 #End of file
 volumes:
