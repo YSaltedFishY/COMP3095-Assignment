@@ -1,0 +1,192 @@
+#---------------------------------------------------------
+# This command will start the containers in detached mode without rebuilding the images (If they already exist)
+# 1. docker-compose -p comp3095-assignment02 -f docker-compose.yml up -d
+# This command forces the rebuild of images, even if the images already exist, before starting the containers
+# 2. docker-compose -p comp3095-assignment02 -f docker-compose.yml up -d --build
+# 3. docker build -t product-service:1.0 .
+#---------------------------------------------------------
+#version: '3.9'
+
+services:
+
+  #Room and User service
+  room-service:
+    image: room-service
+    ports:
+      - "8081:8081"
+    build:
+      context: ../room-service
+      dockerfile: ./Dockerfile
+    container_name: room-service
+    depends_on:
+      - postgres-room
+    environment:
+      SPRING_PROFILES_ACTIVE: docker
+    networks:
+      - spring
+
+  user-service:
+    image: user-service
+    ports:
+      - "8083:8083"
+    build:
+      context: ../user-service
+      dockerfile: ./Dockerfile
+    container_name: user-service
+    depends_on:
+      - postgres-user
+    environment:
+      SPRING_PROFILES_ACTIVE: docker
+    networks:
+      - spring
+
+  approval-service:
+    image: approval-service
+    ports:
+      - "8085:8085"
+    build:
+      context: ../approval-service
+      dockerfile: ./Dockerfile
+    container_name: approval-service
+    depends_on:
+      - postgres-approval
+    environment:
+      SPRING_PROFILES_ACTIVE: docker
+    networks:
+      - spring
+
+
+  #Postgres DB
+
+  postgres-room:
+    image: postgres
+    ports:
+      - "5432:5432"
+    container_name: postgres-room
+    environment:
+      - POSTGRES_USER=admin
+      - POSTGRES_PASSWORD=password
+      - POSTGRES_DB=room-service
+    volumes:
+      - ./data/room:/var/lib/postgresql/data
+      - ./init/room/init.sql:/docker-entrypoint-initdb.d/init.sql
+    networks:
+      - spring
+
+  postgres-user:
+    image: postgres
+    ports:
+      - "5433:5432"
+    container_name: postgres-user
+    environment:
+      - POSTGRES_USER=admin
+      - POSTGRES_PASSWORD=password
+      - POSTGRES_DB=user-service
+    volumes:
+      - ./data/user:/var/lib/postgresql/data
+      - ./init/user/init.sql:/docker-entrypoint-initdb.d/init.sql
+    networks:
+      - spring
+
+  postgres-approval:
+    image: postgres
+    ports:
+      - "5434:5432"
+    container_name: postgres-approval
+    environment:
+      - POSTGRES_USER=admin
+      - POSTGRES_PASSWORD=password
+      - POSTGRES_DB=approval-service
+    volumes:
+      - ./data/approval:/var/lib/postgresql/data
+      - ./init/approval/init.sql:/docker-entrypoint-initdb.d/init.sql
+    networks:
+      - spring
+
+  #Booking and Event
+
+  booking-service:
+    image: booking-service
+    ports:
+      - "8082:8082"
+    build:
+      context: ../booking-service
+      dockerfile: ./Dockerfile
+    container_name: booking-service
+    environment:
+      SPRING_PROFILES_ACTIVE: docker
+    depends_on:
+      - mongodb
+    networks:
+      - spring
+
+  event-service:
+    image: event-service
+    ports:
+      - "8084:8084"
+    build:
+      context: ../event-service
+      dockerfile: ./Dockerfile
+    container_name: event-service
+    environment:
+      SPRING_PROFILES_ACTIVE: docker
+    depends_on:
+      - mongodb
+    networks:
+      - spring
+
+
+
+  #MongoDB
+
+  mongodb:
+    image: mongo:latest
+    ports:
+      - "27019:27017"
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=admin
+      - MONGO_INITDB_ROOT_PASSWORD=password
+    volumes:
+      - ./data/mongo/products:/data/db
+      - ./init/mongo/docker-entrypoint-initdb.d/mongo-init.js/mongo-init.js:/init/mongo/docker-entrypoint-initdb.d/mongo-init.js/mongo-init.js:ro #ro is delete the next queue
+    #restart: unless-stopped #docker will restart until we manually stop it
+    container_name: mongodb-a2
+    #command: mongod -auth
+    networks:
+      - spring
+
+  mongo-express:
+    image: mongo-express
+    ports:
+      - "8088:8088" #Default port don't change
+    environment:
+      - ME_CONFIG_MONGODB_ADMINUSERNAME=admin
+      - ME_CONFIG_MONGODB_ADMINPASSWORD=password
+      - ME_CONFIG_MONGODB_SERVER=mongodb
+    container_name: mongo-express-a2
+    depends_on:
+      - mongodb
+    networks:
+      - spring
+
+
+  #PGAdmin UI
+  pgadmin:
+    image: dpage/pgadmin4
+    ports:
+      - "8888:80" #pgadmin default
+    container_name: pgadmin-dpage-a2
+    environment:
+      - PGADMIN_DEFAULT_EMAIL=admin@domain.ca
+      - PGADMIN_DEFAULT_PASSWORD=password
+
+#End of file
+volumes:
+  mongodb-db:
+    driver: local
+  postgres:
+    driver: local
+
+networks:
+  spring:
+    driver: bridge
