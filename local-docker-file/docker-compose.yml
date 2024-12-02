@@ -9,6 +9,22 @@
 
 services:
 
+  #API Gateway
+  api-gateway:
+    image: api-gateway
+    ports:
+      - "9000:9000"
+    build:
+      context: ../api-gateway
+      dockerfile: ./Dockerfile
+    container_name: api-gateway-a2
+    environment:
+      SPRING_PROFILES_ACTIVE: docker
+    depends_on:
+      - keycloak
+    networks:
+      - spring
+
   #Room and User service
   room-service:
     image: room-service
@@ -151,12 +167,7 @@ services:
     networks:
       - spring
 
-
-
-
-
   #MongoDB
-
   mongodb:
     image: mongo:latest
     ports:
