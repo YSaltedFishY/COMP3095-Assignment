@@ -24,6 +24,6 @@ COPY --from=builder /home/gradle/src/build/libs/*.jar /app/room-service.jar
 ENV POSTGRES_USER=admin \
     POSTGRES_PWD=password
 #expose point 8084 of our container
-EXPOSE 8086
+EXPOSE 8081
 
 ENTRYPOINT ["java", "-jar", "/app/room-service.jar"]
