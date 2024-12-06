@@ -9,6 +9,12 @@ public record BookingRequest(
         Long roomId,
         LocalDateTime startTime,
         LocalDateTime endTime,
-        String purpose
+        String approved,
+
+        String eventType,
+        String eventName,
+        int expectedAttendees
 ) {
+
 }
+

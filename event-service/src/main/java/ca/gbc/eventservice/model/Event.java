@@ -7,6 +7,8 @@ import lombok.NoArgsConstructor;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
+import java.time.LocalDateTime;
+
 @Document(value = "event")
 @AllArgsConstructor
 @NoArgsConstructor
@@ -15,10 +17,11 @@ import org.springframework.data.mongodb.core.mapping.Document;
 public class Event {
     @Id
     private String id;
-
     private String eventName;
     private Long organizerId;//UserId from user-service
     private Long roomId;
+    private LocalDateTime startTime;
+    private LocalDateTime endTime;
     private String bookingId;
     private String eventType;
     private int expectedAttendees;

@@ -167,7 +167,6 @@ services:
     networks:
       - spring
 
-  #MongoDB
   mongodb:
     image: mongo:latest
     ports:
@@ -176,13 +175,15 @@ services:
       - MONGO_INITDB_ROOT_USERNAME=admin
       - MONGO_INITDB_ROOT_PASSWORD=password
     volumes:
-      - ./data/mongo/products:/data/db
+      - ./data/mongo/bookings:/data/db
       - ./init/mongo/docker-entrypoint-initdb.d/mongo-init.js/mongo-init.js:/init/mongo/docker-entrypoint-initdb.d/mongo-init.js/mongo-init.js:ro #ro is delete the next queue
     #restart: unless-stopped #docker will restart until we manually stop it
     container_name: mongodb-a2
     #command: mongod -auth
     networks:
       - spring
+
+
 
   mongo-express:
     image: mongo-express
@@ -233,6 +234,56 @@ services:
       - postgres-keycloak
     networks:
       - spring
+#Kafka
+  zookeeper:
+    image: confluentinc/cp-zookeeper
+    container_name: zookeeper-a2
+    hostname: zookeper
+    ports:
+      - "2181:2181"
+    environment:
+      ZOOKEEPER_CLIENT_PORT: 2181
+      ZOOKEEPER_TICK_TIME: 2000
+    networks:
+      - spring
+
+  broker:
+    container_name: broker-a2
+    image: confluentinc/cp-kafka:7.5.0
+    ports:
+      #External connection - communication with order srvice
+      - "9092:9092"
+      #Internal connection
+      - "29092:29092"
+    environment:
+      KAFKA_BROKER_ID: 1
+      KAFKA_ZOOKEEPER_CONNECT: 'zookeeper:2181'
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT, PLAINTEXT_HOST:PLAINTEXT
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://broker:29092, PLAINTEXT_HOST://host.docker.internal:9092
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+      SPRING_PROFILES_ACTIVE: docker
+    depends_on:
+      - zookeeper
+    networks:
+      - spring
+
+  kafka-ui:
+    container_name: kafka-ui-a2
+    image: provectuslabs/kafka-ui
+    ports:
+      - "8086:8080"
+    environment:
+      KAFKA_CLUSTERS_NAME: local
+      KAFKA_CLUSTERS-BOOTSTRAPSERVERS: broker:29092
+      DYNAMIC_CONFIG_ENABLED: 'true'
+      KAFKA_CLUSTERS_SCHEMAREGISTRY: http://schema-registry:8087
+      SPRING_PROFILES_ACTIVE: docker
+
+    depends_on:
+      - broker
+    networks:
+      - spring
+
 
 
 

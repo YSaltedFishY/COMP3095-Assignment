@@ -19,12 +19,15 @@ public class Booking {
 
     @Id
     private String id;
-
     private Long userId;
     private Long roomId;
     private LocalDateTime startTime;
     private LocalDateTime endTime;
-    private String purpose;
+    private String approved;
+    private String eventType;
+    private String eventName;
+    private int expectedAttendees;
+
 
 
 }

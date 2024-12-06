@@ -3,6 +3,8 @@ package ca.gbc.userservice.controller;
 import ca.gbc.userservice.dto.UserRequest;
 import ca.gbc.userservice.dto.UserResponse;
 import ca.gbc.userservice.service.UserService;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -41,6 +43,16 @@ public class UserController {
     public List<UserResponse> getAllUsers(){
         return userService.getAllUsers();
     }
+
+    @GetMapping("/{userId}")
+    @ResponseStatus(HttpStatus.OK)
+    public String getUserById(@PathVariable ("userId") Long userId) throws JsonProcessingException {
+        UserResponse user =userService.getUserById(userId);
+        ObjectMapper mapper = new ObjectMapper();
+
+        return mapper.writeValueAsString(user);
+    }
+
     @PutMapping("/{userId}")
     public ResponseEntity<UserResponse> updateUser(@PathVariable ("userId") Long userId, @RequestBody UserRequest userRequest){
         //log.debug("userUpdating");

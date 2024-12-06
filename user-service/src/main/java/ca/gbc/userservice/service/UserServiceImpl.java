@@ -42,6 +42,11 @@ public class UserServiceImpl implements UserService{
         List<User> users=userRepository.findAll();
         return users.stream().map(this::mapToUserResponse).toList();
     }
+    @Override
+    public UserResponse getUserById(Long id) {
+        User user = userRepository.getReferenceById(id);
+        return mapToUserResponse(user);
+    }
 
     private  UserResponse mapToUserResponse(User user){
         return new UserResponse(user.getId(),  user.getName(), user.getEmail(), user.getUser_type(),user.getRole());

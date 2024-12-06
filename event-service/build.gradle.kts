@@ -21,6 +21,9 @@ configurations {
 
 repositories {
     mavenCentral()
+    maven {
+        url=uri("https://packages.confluent.io/maven/")
+    }
 }
 
 dependencyManagement{
@@ -46,6 +49,16 @@ dependencies {
     testImplementation("org.testcontainers:mongodb")
     testRuntimeOnly("org.junit.platform:junit-platform-launcher")
     testImplementation("io.rest-assured:rest-assured:5.5.0")
+
+    implementation("org.springframework.boot:spring-boot-starter-mail")
+    implementation("org.springframework.kafka:spring-kafka")
+    testImplementation("org.springframework.kafka:spring-kafka-test")
+    testImplementation("org.testcontainers:kafka")
+//    implementation(project(":shared-schema")) //use : to specify local
+
+    implementation("io.confluent:kafka-avro-serializer:7.7.2")
+    implementation("io.confluent:kafka-schema-registry-client:7.7.2")
+    implementation("org.apache.avro:avro:1.12.0")
 }
 
 tasks.withType<Test> {

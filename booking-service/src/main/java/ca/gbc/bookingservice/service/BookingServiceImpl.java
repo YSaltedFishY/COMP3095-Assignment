@@ -4,14 +4,20 @@ import ca.gbc.bookingservice.client.RoomClient;
 import ca.gbc.bookingservice.client.UserClient;
 import ca.gbc.bookingservice.dto.BookingRequest;
 import ca.gbc.bookingservice.dto.BookingResponse;
+import ca.gbc.bookingservice.event.BookingMadeEvent;
 import ca.gbc.bookingservice.model.Booking;
 import ca.gbc.bookingservice.repository.BookingRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import net.minidev.json.parser.JSONParser;
+import org.json.JSONException;
+import org.json.JSONObject;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
+import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
+import wiremock.org.eclipse.jetty.util.ajax.JSON;
 
 import java.util.List;
 
@@ -24,9 +30,11 @@ public class BookingServiceImpl implements BookingService{
     private final MongoTemplate mongoTemplate;
     private final UserClient userClient;
     private final RoomClient roomClient;
+    private final KafkaTemplate<String, BookingMadeEvent> kafkaTemplate;
+
 
     @Override
-    public BookingResponse createBooking(BookingRequest bookingRequest) {
+    public BookingResponse createBooking(BookingRequest bookingRequest) throws JSONException {
 
         var isRoomAvailable = roomClient.getRoomAvailability(bookingRequest.roomId());
 
@@ -40,8 +48,19 @@ public class BookingServiceImpl implements BookingService{
                     .build();
 
             bookingRepository.save(booking);
+            JSONObject user = userClient.getUserById(bookingRequest.userId());
+            JSONParser parser = new JSONParser(JSONParser.MODE_JSON_SIMPLE);
+            //{"id":1,"name":"Audrey Tjandra","email":"tjandraaudrey@hotmail.com","userType":"Student","role":"student"}
+
+
+
 
             roomClient.updateAvailability(bookingRequest.roomId(), false);
+           BookingMadeEvent bookingMadeEvent =
+                    new BookingMadeEvent(booking.getId(), (String) user.get("email"));
+            log.info("Start - sending orderplacedevent {} too kafka topic order--placed", bookingMadeEvent);
+            kafkaTemplate.send("booking-made", bookingMadeEvent);
+            log.info("Sent booking made event {} to kafka topic booking-made", bookingMadeEvent);
 
             return new BookingResponse(booking.getId(), booking.getUserId(), booking.getRoomId(),
                     booking.getStartTime(), booking.getEndTime(), booking.getPurpose());

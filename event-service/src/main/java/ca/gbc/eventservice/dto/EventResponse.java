@@ -1,5 +1,7 @@
 package ca.gbc.eventservice.dto;
 
+import java.time.LocalDateTime;
+
 public record EventResponse(
         String id,
 
@@ -8,6 +10,9 @@ public record EventResponse(
         Long roomId,
         String bookingId,
         String eventType,
-        int expectedAttendees
+        int expectedAttendees,
+
+        LocalDateTime startTime,
+        LocalDateTime endTime
 ) {
 }
