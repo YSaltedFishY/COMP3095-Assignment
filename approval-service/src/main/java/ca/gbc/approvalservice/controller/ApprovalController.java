@@ -3,6 +3,7 @@ package ca.gbc.approvalservice.controller;
 import ca.gbc.approvalservice.dto.ApprovalRequest;
 import ca.gbc.approvalservice.dto.ApprovalResponse;
 import ca.gbc.approvalservice.service.ApprovalService;
+import jakarta.annotation.security.RolesAllowed;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;

@@ -2,7 +2,7 @@
 # This command will start the containers in detached mode without rebuilding the images (If they already exist)
 # 1. docker-compose -p comp3095-assignment02 -f docker-compose.yml up -d
 # This command forces the rebuild of images, even if the images already exist, before starting the containers
-# 2. docker-compose -p comp3095-assignment02 -f docker-compose.yml up -d --build
+# 2. docker-compose -p comp3095-assignment2 -f docker-compose.yml up -d --build
 # 3. docker build -t product-service:1.0 .
 #---------------------------------------------------------
 #version: '3.9'
