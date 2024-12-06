@@ -44,7 +44,10 @@ public class BookingServiceImpl implements BookingService{
                     .roomId(bookingRequest.roomId())
                     .startTime(bookingRequest.startTime())
                     .endTime(bookingRequest.endTime())
-                    .purpose(bookingRequest.purpose())
+                    .expectedAttendees(bookingRequest.expectedAttendees())
+                    .approved("PENDING")
+                    .eventName(bookingRequest.eventName())
+                    .eventType(bookingRequest.eventType())
                     .build();
 
             bookingRepository.save(booking);
@@ -63,7 +66,7 @@ public class BookingServiceImpl implements BookingService{
             log.info("Sent booking made event {} to kafka topic booking-made", bookingMadeEvent);
 
             return new BookingResponse(booking.getId(), booking.getUserId(), booking.getRoomId(),
-                    booking.getStartTime(), booking.getEndTime(), booking.getPurpose());
+                    booking.getStartTime(), booking.getEndTime(), booking.getApproved(), booking.getEventType(), booking.getEventName(), booking.getExpectedAttendees());
         }else{
             throw new RuntimeException("Room id " + bookingRequest.roomId() + " is not available");
         }
@@ -79,7 +82,7 @@ public class BookingServiceImpl implements BookingService{
 
     private BookingResponse mapToBookingResponse(Booking booking){
         return new BookingResponse(booking.getId(), booking.getUserId(), booking.getRoomId(),
-                booking.getStartTime(),booking.getEndTime(), booking.getPurpose());
+                booking.getStartTime(), booking.getEndTime(), booking.getApproved(), booking.getEventType(), booking.getEventName(), booking.getExpectedAttendees());
     }
 
     @Override
@@ -94,7 +97,10 @@ public class BookingServiceImpl implements BookingService{
             booking.setRoomId(bookingRequest.roomId());
             booking.setStartTime(bookingRequest.startTime());
             booking.setEndTime(bookingRequest.endTime());
-            booking.setPurpose(bookingRequest.purpose());
+            booking.setApproved(bookingRequest.approved());
+            booking.setEventName(bookingRequest.eventName());
+            booking.setEventType(bookingRequest.eventType());
+            booking.setExpectedAttendees(booking.getExpectedAttendees());
             return bookingRepository.save(booking).getId();
         }
 

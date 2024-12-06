@@ -80,11 +80,13 @@ public class EventServiceImpl implements EventService {
                     .bookingId(eventRequest.bookingId())
                     .eventType(eventRequest.eventType())
                     .expectedAttendees(eventRequest.expectedAttendees())
+                    .startTime(eventRequest.startTime())
+                    .endTime(eventRequest.endTime())
                     .build();
             eventRepository.save(event);
 
             return new EventResponse(event.getId(), event.getEventName(), event.getOrganizerId(), event.getRoomId(),
-                    event.getBookingId(), event.getEventType(), event.getExpectedAttendees());
+                    event.getBookingId(), event.getEventType(), event.getExpectedAttendees(), event.getStartTime(),event.getEndTime());
         }else if (!isUserStaff && eventRequest.expectedAttendees()>10) {
             throw new RuntimeException("ExpectedAttendees:" + eventRequest.expectedAttendees()
                     + " Students may only have up to 10 persons for event booking");
@@ -102,7 +104,7 @@ public class EventServiceImpl implements EventService {
 
     private EventResponse mapToEventResponse(Event event){
         return new EventResponse(event.getId(),event.getEventName(), event.getOrganizerId(),
-                event.getRoomId(),event.getBookingId(),event.getEventType(),event.getExpectedAttendees());
+                event.getRoomId(),event.getBookingId(),event.getEventType(),event.getExpectedAttendees(), event.getStartTime(), event.getEndTime());
     }
 
     @Override
@@ -118,6 +120,8 @@ public class EventServiceImpl implements EventService {
             event.setBookingId(eventRequest.bookingId());
             event.setEventType(eventRequest.eventType());
             event.setExpectedAttendees(eventRequest.expectedAttendees());
+            event.setStartTime(eventRequest.startTime());
+            event.setEndTime(eventRequest.endTime());
 
             return eventRepository.save(event).getId();
         }
