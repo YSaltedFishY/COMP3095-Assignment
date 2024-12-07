@@ -17,4 +17,5 @@ public interface UserService {
     void deleteUser(Long id);
     Boolean checkUserStaff(Long id);
     void deleteAllUsers();
+    boolean getUserInfo(Long id);
 }

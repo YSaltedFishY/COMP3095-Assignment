@@ -24,7 +24,11 @@ COPY --from=builder /home/gradle/src/build/libs/*.jar /app/booking-service.jar
 
 #DEFAULTS
 ENV MONGO_DB_USERNAME=admin \
-    MONGO_DB_PWD=password
+    MONGO_DB_PWD=password \
+    SPRING_PROFILES_ACTIVE=docker \
+    KAFKA_BROKER=broker:29092 \
+    KAFKA_GROUP_ID=notification-service-group \
+    KAFKA_TOPIC=notification-topic
 
 #Different port than the original one
 EXPOSE 8082

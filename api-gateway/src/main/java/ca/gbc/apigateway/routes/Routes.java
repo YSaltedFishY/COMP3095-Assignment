@@ -90,7 +90,8 @@ public class Routes {
                         log.error("Error occurred while routing request: {}", e.getMessage());
                         return ServerResponse.status(500).body("An error occurred routing");
                     }
-                }).build();
+                })
+                .build();
 
     }
 
@@ -168,6 +169,17 @@ public class Routes {
 
                 })
                 .route(RequestPredicates.path("/api/user/deleteeverything"), request -> {
+                    log.info("Received request for product service: {}", request.uri());
+                    try{
+                        ServerResponse response = HandlerFunctions.http(userServiceUrl).handle(request);
+                        log.info("Response status: {}", response.statusCode());
+                        return response;
+                    }catch(Exception e){
+                        log.error("Error occurred while routing request: {}", e.getMessage());
+                        return ServerResponse.status(500).body("An error occurred routing");
+                    }
+                })
+                .route(RequestPredicates.path("/api/user/**"), request -> {
                     log.info("Received request for product service: {}", request.uri());
                     try{
                         ServerResponse response = HandlerFunctions.http(userServiceUrl).handle(request);

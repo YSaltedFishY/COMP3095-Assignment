@@ -4,6 +4,7 @@ import ca.gbc.bookingservice.client.RoomClient;
 import ca.gbc.bookingservice.client.UserClient;
 import ca.gbc.bookingservice.dto.BookingRequest;
 import ca.gbc.bookingservice.dto.BookingResponse;
+import ca.gbc.bookingservice.event.UserInfoEvent;
 import ca.gbc.bookingservice.model.Booking;
 import ca.gbc.bookingservice.repository.BookingRepository;
 import lombok.RequiredArgsConstructor;
@@ -11,6 +12,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
+import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -24,19 +26,30 @@ public class BookingServiceImpl implements BookingService{
     private final MongoTemplate mongoTemplate;
     private final UserClient userClient;
     private final RoomClient roomClient;
+    private UserInfoEvent userInfoEvent;
+
+    @KafkaListener(topics = "user-info")
+    public void listen(UserInfoEvent event){
+        this.userInfoEvent = event;
+    }
 
     @Override
     public BookingResponse createBooking(BookingRequest bookingRequest) {
 
         var isRoomAvailable = roomClient.getRoomAvailability(bookingRequest.roomId());
 
-        if(isRoomAvailable) {
+        boolean userExist = userClient.getUserInfo(bookingRequest.userId());
+
+        if(isRoomAvailable && userExist) {
             Booking booking = Booking.builder()
                     .userId(bookingRequest.userId())
                     .roomId(bookingRequest.roomId())
                     .startTime(bookingRequest.startTime())
                     .endTime(bookingRequest.endTime())
                     .purpose(bookingRequest.purpose())
+                    .email(userInfoEvent.getEmail())
+                    .name(userInfoEvent.getName())
+                    .role(userInfoEvent.getRole())
                     .build();
 
             bookingRepository.save(booking);
@@ -44,11 +57,17 @@ public class BookingServiceImpl implements BookingService{
             roomClient.updateAvailability(bookingRequest.roomId(), false);
 
             return new BookingResponse(booking.getId(), booking.getUserId(), booking.getRoomId(),
-                    booking.getStartTime(), booking.getEndTime(), booking.getPurpose());
+                    booking.getStartTime(), booking.getEndTime(), booking.getPurpose(),
+                    booking.getEmail(),booking.getName(),booking.getRole());
         }else{
             throw new RuntimeException("Room id " + bookingRequest.roomId() + " is not available");
         }
     }
+
+
+
+
+
 
     @Override
     public List<BookingResponse> getAllBookings() {
@@ -60,24 +79,33 @@ public class BookingServiceImpl implements BookingService{
 
     private BookingResponse mapToBookingResponse(Booking booking){
         return new BookingResponse(booking.getId(), booking.getUserId(), booking.getRoomId(),
-                booking.getStartTime(),booking.getEndTime(), booking.getPurpose());
+                booking.getStartTime(),booking.getEndTime(), booking.getPurpose(),booking.getEmail(),
+                booking.getName(),booking.getRole());
     }
 
     @Override
     public String updateBooking(String id, BookingRequest bookingRequest) {
-
+        boolean userExist = userClient.getUserInfo(bookingRequest.userId());
         Query query = new Query();
         query.addCriteria(Criteria.where("id").is(id));
         Booking booking = mongoTemplate.findOne(query, Booking.class);
 
         if(booking != null){
-            booking.setUserId(bookingRequest.userId());
             booking.setRoomId(bookingRequest.roomId());
             booking.setStartTime(bookingRequest.startTime());
             booking.setEndTime(bookingRequest.endTime());
             booking.setPurpose(bookingRequest.purpose());
+            if(userExist){
+                booking.setUserId(bookingRequest.userId());
+                booking.setName(userInfoEvent.getName());
+                booking.setEmail(userInfoEvent.getEmail());
+                booking.setRole(userInfoEvent.getRole());
+            }
+
             return bookingRepository.save(booking).getId();
         }
+
+
 
         return id;
     }

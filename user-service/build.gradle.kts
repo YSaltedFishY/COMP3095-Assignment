@@ -36,8 +36,11 @@ dependencies {
 	implementation("org.springframework.boot:spring-boot-starter-data-jpa")
 	implementation("org.springframework.boot:spring-boot-starter-web")
 
-//	implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.6.0")
-//	testImplementation("org.springdoc:springdoc-openapi-starter-webmvc-api:2.6.0")
+	//Week 7.1
+	implementation("org.springframework.kafka:spring-kafka:3.3.0")
+	testImplementation("org.springframework.kafka:spring-kafka-test:3.3.0")
+	testImplementation("org.testcontainers:kafka:1.20.4")
+
 	implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.5.0")
 	testImplementation("org.springdoc:springdoc-openapi-starter-webmvc-api:2.5.0")
 

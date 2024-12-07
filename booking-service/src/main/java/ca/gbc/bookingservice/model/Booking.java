@@ -25,6 +25,7 @@ public class Booking {
     private LocalDateTime startTime;
     private LocalDateTime endTime;
     private String purpose;
-
-
+    private String email;
+    private String name;
+    private String role;
 }

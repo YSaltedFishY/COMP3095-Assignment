@@ -69,7 +69,13 @@ public class UserController {
     public ResponseEntity<UserResponse> deleteAll(){
         userService.deleteAllUsers();
         return new ResponseEntity<>( HttpStatus.NO_CONTENT);
+    }
 
+    //User-info event
+    @GetMapping("/info/{id}")
+    @ResponseStatus(HttpStatus.OK)
+    public Boolean getUserInfo(@PathVariable ("id") Long userId){
+        return userService.getUserInfo(userId);
     }
 
 }

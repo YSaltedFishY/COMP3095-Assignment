@@ -2,12 +2,15 @@ package ca.gbc.userservice.service;
 
 import ca.gbc.userservice.dto.UserRequest;
 import ca.gbc.userservice.dto.UserResponse;
+import ca.gbc.userservice.event.UserInfoEvent;
 import ca.gbc.userservice.model.User;
 import ca.gbc.userservice.model.UserType;
 import ca.gbc.userservice.repository.UserRepository;
+import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.kafka.core.KafkaTemplate;
 
 import java.util.List;
 
@@ -18,6 +21,10 @@ public class UserServiceImpl implements UserService{
 
 
     private final UserRepository userRepository;
+
+    private final KafkaTemplate<String, UserInfoEvent> kafkaTemplate;
+
+
 
 
     @Override
@@ -59,7 +66,7 @@ public class UserServiceImpl implements UserService{
 
         User user = userRepository.getReferenceById(id);
 
-        if(user !=null){
+        if(user != null){
             user.setName(userRequest.name());
             user.setEmail(userRequest.email());
             user.setUser_type(userRequest.user_type());
@@ -86,6 +93,24 @@ public class UserServiceImpl implements UserService{
     }
     public void deleteAllUsers() {
         userRepository.deleteAll();
+    }
+
+    //Kafka for booking Service
+    @Override
+    public boolean getUserInfo(Long id){
+        try {
+            User user = userRepository.getReferenceById(id);
+
+            UserInfoEvent userInfoEvent =
+                    new UserInfoEvent(user.getEmail(), user.getName(), user.getRole());
+            log.info("Start - Sending UserInfoEvent {} to Kafka topic order--placed", userInfoEvent);
+            kafkaTemplate.send("user-info", userInfoEvent);
+            log.info("Complete - Sent UserInfoEvent {} to Kafka topic order--placed", userInfoEvent);
+            return true;
+        }catch (EntityNotFoundException e){
+            log.info("User with id {} not found", id);
+            return false;
+        }
     }
 
 }
