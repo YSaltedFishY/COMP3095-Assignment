@@ -1,5 +1,6 @@
 package ca.gbc.approvalservice.service;
 
+import ca.gbc.approvalservice.client.EventClient;
 import ca.gbc.approvalservice.client.UserClient;
 import ca.gbc.approvalservice.dto.ApprovalRequest;
 import ca.gbc.approvalservice.dto.ApprovalResponse;
@@ -22,6 +23,7 @@ public class ApprovalServiceImpl implements ApprovalService {
 
     private final ApprovalRepository approvalRepository;
     private final UserClient userClient;
+    private final EventClient eventClient;
 
 
     @Override
@@ -75,6 +77,8 @@ public class ApprovalServiceImpl implements ApprovalService {
         if(updateApproval != null){
             updateApproval.setStatus(approvalRequest.status());
             updateApproval.setTime(LocalDateTime.now());
+
+            eventClient.updateApproval(updateApproval.getEventId(),approvalRequest.status());
             return approvalRepository.save(updateApproval).getId();
         }
 

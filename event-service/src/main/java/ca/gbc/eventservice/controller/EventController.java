@@ -52,6 +52,12 @@ public class EventController {
 
     }
 
+    @PutMapping("/approve/{id}/{approval}")
+    public String updateApproval(@PathVariable("id") String id,
+                                 @PathVariable("approval") String approval){
+        return eventService.updateApproval(id,approval);
+    }
+
     @DeleteMapping("/{id}")
     public ResponseEntity<?> deleteBooking(@PathVariable("id") String id){
         eventService.deleteEvent(id);

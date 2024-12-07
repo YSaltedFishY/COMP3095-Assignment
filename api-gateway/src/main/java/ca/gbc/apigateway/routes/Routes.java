@@ -222,6 +222,18 @@ public class Routes {
                         return ServerResponse.status(500).body("An error occurred routing");
                     }
 
+                })
+                .route(RequestPredicates.path("/api/event/**"), request -> {
+                    log.info("Received request for product service: {}", request.uri());
+                    try{
+                        ServerResponse response = HandlerFunctions.http(eventServiceUrl).handle(request);
+                        log.info("Response status: {}", response.statusCode());
+                        return response;
+                    }catch(Exception e){
+                        log.error("Error occurred while routing request: {}", e.getMessage());
+                        return ServerResponse.status(500).body("An error occurred routing");
+                    }
+
                 }).build();
 
     }

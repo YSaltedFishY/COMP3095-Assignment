@@ -7,6 +7,7 @@ import java.util.List;
 
 public interface EventService {
     EventResponse createEvent(EventRequest eventRequest);
+    String updateApproval(String id, String approval);
 
     List<EventResponse> getAllEvents();
 

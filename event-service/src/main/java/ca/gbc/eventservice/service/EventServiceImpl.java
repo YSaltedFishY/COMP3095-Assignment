@@ -5,6 +5,7 @@ import ca.gbc.eventservice.client.BookingClient;
 import ca.gbc.eventservice.client.UserClient;
 import ca.gbc.eventservice.dto.EventRequest;
 import ca.gbc.eventservice.dto.EventResponse;
+import ca.gbc.eventservice.event.BookingMadeEvent;
 import ca.gbc.eventservice.model.Event;
 import ca.gbc.eventservice.repository.EventRepository;
 import lombok.RequiredArgsConstructor;
@@ -12,10 +13,16 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
+
+
+import org.springframework.kafka.annotation.KafkaListener;
+import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Service;
 
 
+
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @Slf4j
@@ -26,6 +33,27 @@ public class EventServiceImpl implements EventService {
     private final MongoTemplate mongoTemplate;
     private final BookingClient bookingClient;
     private final UserClient userClient;
+
+    @KafkaListener(topics = "booking-made")
+    public void listen(BookingMadeEvent bookingMadeEvent){
+        Event event = Event.builder()
+                .eventName("Room Booking")
+                .organizerId(bookingMadeEvent.getUserId())
+                .roomId(bookingMadeEvent.getRoomId())
+                .bookingId(bookingMadeEvent.getBookingNumber())
+                .eventType("Booking")
+                .expectedAttendees(10)
+                .startTime(bookingMadeEvent.getStartTime())
+                .endTime(bookingMadeEvent.getEndTime())
+                .email(bookingMadeEvent.getEmail())
+                .organizerRole(bookingMadeEvent.getRole())
+                .organizerName(bookingMadeEvent.getOrganizerName())
+                .approval("PENDING")
+                .build();
+        eventRepository.save(event);
+    }
+
+
 
     @Override
     public EventResponse createEvent(EventRequest eventRequest) {
@@ -40,11 +68,19 @@ public class EventServiceImpl implements EventService {
                     .bookingId(eventRequest.bookingId())
                     .eventType(eventRequest.eventType())
                     .expectedAttendees(eventRequest.expectedAttendees())
+                    .startTime(eventRequest.startTime())
+                    .endTime(eventRequest.endTime())
+                    .email(eventRequest.email())
+                    .organizerRole(eventRequest.organizerRole())
+                    .organizerName(eventRequest.organizerName())
+                    .approval("PENDING")
                     .build();
             eventRepository.save(event);
 
-            return new EventResponse(event.getId(), event.getEventName(), event.getOrganizerId(), event.getRoomId(),
-                    event.getBookingId(), event.getEventType(), event.getExpectedAttendees());
+            return new EventResponse(event.getId(),event.getBookingId(),event.getRoomId(),
+                    event.getOrganizerId(),event.getOrganizerName(),event.getOrganizerRole(),
+                    event.getEventName(),event.getEventType(),event.getExpectedAttendees(),
+                    event.getStartTime(),event.getEndTime(),event.getEmail(),event.getApproval());
         }else if (!isUserStaff && eventRequest.expectedAttendees()>10) {
             throw new RuntimeException("ExpectedAttendees:" + eventRequest.expectedAttendees()
                     + " Students may only have up to 10 persons for event booking");
@@ -61,8 +97,10 @@ public class EventServiceImpl implements EventService {
     }
 
     private EventResponse mapToEventResponse(Event event){
-        return new EventResponse(event.getId(),event.getEventName(), event.getOrganizerId(),
-                event.getRoomId(),event.getBookingId(),event.getEventType(),event.getExpectedAttendees());
+        return new EventResponse(event.getId(),event.getBookingId(),event.getRoomId(),
+                event.getOrganizerId(),event.getOrganizerName(),event.getOrganizerRole(),
+                event.getEventName(),event.getEventType(),event.getExpectedAttendees(),
+                event.getStartTime(),event.getEndTime(),event.getEmail(),event.getApproval());
     }
 
     @Override
@@ -71,19 +109,38 @@ public class EventServiceImpl implements EventService {
         query.addCriteria(Criteria.where("id").is(id));
         Event event = mongoTemplate.findOne(query, Event.class);
 
+
         if(event != null){
+            String approval = event.getApproval();
             event.setEventName(eventRequest.eventName());
             event.setOrganizerId(eventRequest.organizerId());
             event.setRoomId(eventRequest.roomId());
             event.setBookingId(eventRequest.bookingId());
             event.setEventType(eventRequest.eventType());
             event.setExpectedAttendees(eventRequest.expectedAttendees());
-
+            event.setStartTime(eventRequest.startTime());
+            event.setEndTime(eventRequest.endTime());
+            event.setEmail(eventRequest.email());
+            event.setOrganizerRole(eventRequest.organizerRole());
+            event.setOrganizerName(eventRequest.organizerName());
+            event.setApproval(approval);
             return eventRepository.save(event).getId();
         }
 
         return id;
 
+    }
+
+    @Override
+    public String updateApproval(String id, String approval) {
+        Event eventUpdate = eventRepository.findById(id).orElse(null);
+
+        if(eventUpdate != null){
+            eventUpdate.setApproval(approval);
+            return eventRepository.save(eventUpdate).getId() + " has been " + approval;
+        }
+
+        return id;
     }
 
     @Override

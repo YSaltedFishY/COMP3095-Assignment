@@ -4,6 +4,7 @@ import ca.gbc.bookingservice.client.RoomClient;
 import ca.gbc.bookingservice.client.UserClient;
 import ca.gbc.bookingservice.dto.BookingRequest;
 import ca.gbc.bookingservice.dto.BookingResponse;
+import ca.gbc.bookingservice.event.BookingMadeEvent;
 import ca.gbc.bookingservice.event.UserInfoEvent;
 import ca.gbc.bookingservice.model.Booking;
 import ca.gbc.bookingservice.repository.BookingRepository;
@@ -13,6 +14,7 @@ import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.kafka.annotation.KafkaListener;
+import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -26,6 +28,7 @@ public class BookingServiceImpl implements BookingService{
     private final MongoTemplate mongoTemplate;
     private final UserClient userClient;
     private final RoomClient roomClient;
+    private final KafkaTemplate<String, BookingMadeEvent> kafkaTemplate;
     private UserInfoEvent userInfoEvent;
 
     @KafkaListener(topics = "user-info")
@@ -36,9 +39,9 @@ public class BookingServiceImpl implements BookingService{
     @Override
     public BookingResponse createBooking(BookingRequest bookingRequest) {
 
-        var isRoomAvailable = roomClient.getRoomAvailability(bookingRequest.roomId());
-
         boolean userExist = userClient.getUserInfo(bookingRequest.userId());
+
+        var isRoomAvailable = roomClient.getRoomAvailability(bookingRequest.roomId());
 
         if(isRoomAvailable && userExist) {
             Booking booking = Booking.builder()
@@ -54,7 +57,19 @@ public class BookingServiceImpl implements BookingService{
 
             bookingRepository.save(booking);
 
-            roomClient.updateAvailability(bookingRequest.roomId(), false);
+//            roomClient.updateAvailability(bookingRequest.roomId(), false);
+
+            //Send message to Kafka
+            BookingMadeEvent bookingMadeEvent =
+                    new BookingMadeEvent(booking.getId(),booking.getUserId(),booking.getRoomId(),
+                            booking.getStartTime(),booking.getEndTime(),booking.getName(),
+                            booking.getEmail(),booking.getRole());
+
+            log.info("Start - Sending BookingMadeEvent {} to Kafka topic booking-made", bookingMadeEvent);
+            kafkaTemplate.send("booking-made", bookingMadeEvent);
+            log.info("Complete - Sent BookingMadeEvent {} to Kafka topic booking-made", bookingMadeEvent);
+
+
 
             return new BookingResponse(booking.getId(), booking.getUserId(), booking.getRoomId(),
                     booking.getStartTime(), booking.getEndTime(), booking.getPurpose(),

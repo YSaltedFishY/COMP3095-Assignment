@@ -1,13 +1,22 @@
 package ca.gbc.eventservice.dto;
 
+import java.time.LocalDateTime;
+
 public record EventRequest(
         String id,
 
-        String eventName,
-        Long organizerId,//UserId from user-service
-        Long roomId,
         String bookingId,
+        Long roomId,
+
+        Long organizerId,
+        String organizerName,
+        String organizerRole,
+        String eventName,
         String eventType,
-        int expectedAttendees
+        int expectedAttendees,
+        LocalDateTime startTime,
+        LocalDateTime endTime,
+        String email,
+        String approval
 ) {
 }
