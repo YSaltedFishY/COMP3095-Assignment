@@ -55,7 +55,7 @@ services:
       SPRING_PROFILES_ACTIVE: docker
     networks:
       - spring
-
+  #approval-service
   approval-service:
     image: approval-service
     ports:
