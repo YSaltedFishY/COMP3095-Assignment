@@ -2,13 +2,17 @@ package ca.gbc.apigateway.routes;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.cloud.gateway.server.mvc.filter.CircuitBreakerFilterFunctions;
 import org.springframework.cloud.gateway.server.mvc.handler.GatewayRouterFunctions;
 import org.springframework.cloud.gateway.server.mvc.handler.HandlerFunctions;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.servlet.function.RequestPredicates;
 import org.springframework.web.servlet.function.RouterFunction;
 import org.springframework.web.servlet.function.ServerResponse;
+
+import java.net.URI;
 
 import static org.springframework.cloud.gateway.server.mvc.filter.FilterFunctions.setPath;
 import static org.springframework.cloud.gateway.server.mvc.handler.GatewayRouterFunctions.route;
@@ -91,6 +95,8 @@ public class Routes {
                         return ServerResponse.status(500).body("An error occurred routing");
                     }
                 })
+                .filter(CircuitBreakerFilterFunctions
+                        .circuitBreaker("roomServiceCircuitBreaker", URI.create("forward:/fallbackRoute")))
                 .build();
 
     }
@@ -123,7 +129,10 @@ public class Routes {
                         return ServerResponse.status(500).body("An error occurred routing");
                     }
 
-                }).build();
+                })
+                .filter(CircuitBreakerFilterFunctions
+                        .circuitBreaker("bookingServiceCircuitBreaker", URI.create("forward:/fallbackRoute")))
+                .build();
 
     }
 
@@ -190,7 +199,10 @@ public class Routes {
                         return ServerResponse.status(500).body("An error occurred routing");
                     }
 
-                }).build();
+                })
+                .filter(CircuitBreakerFilterFunctions
+                        .circuitBreaker("userServiceCircuitBreaker", URI.create("forward:/fallbackRoute")))
+                .build();
 
     }
 
@@ -234,7 +246,10 @@ public class Routes {
                         return ServerResponse.status(500).body("An error occurred routing");
                     }
 
-                }).build();
+                })
+                .filter(CircuitBreakerFilterFunctions
+                        .circuitBreaker("eventServiceCircuitBreaker", URI.create("forward:/fallbackRoute")))
+                .build();
 
     }
 
@@ -275,7 +290,10 @@ public class Routes {
                         log.error("Error occurred while routing request: {}", e.getMessage());
                         return ServerResponse.status(500).body("An error occurred routing");
                     }
-                }).build();
+                })
+                .filter(CircuitBreakerFilterFunctions
+                        .circuitBreaker("approvalServiceCircuitBreaker", URI.create("forward:/fallbackRoute")))
+                .build();
     }
 
     @Bean
@@ -325,6 +343,16 @@ public class Routes {
                 .route(RequestPredicates.path("/aggregate/user-service/v3/api-docs"),
                         HandlerFunctions.http(userServiceUrl))
                 .filter(setPath("/api-docs"))
+                .build();
+    }
+
+    //Resilience4j - fallback route
+    @Bean
+    public RouterFunction<ServerResponse> fallbackRoute() {
+        return route( "fallbackRoute")
+                .route(RequestPredicates.all(),
+                        request -> ServerResponse.status(HttpStatus.SERVICE_UNAVAILABLE)
+                                .body("Circuit breaker: Service is Temporarily Unavailable, please try again later"))
                 .build();
     }
 
