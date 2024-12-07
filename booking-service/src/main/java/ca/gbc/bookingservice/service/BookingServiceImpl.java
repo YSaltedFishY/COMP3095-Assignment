@@ -15,6 +15,10 @@ import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.kafka.core.KafkaTemplate;
+import org.springframework.mail.MailException;
+import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.mail.javamail.MimeMessageHelper;
+import org.springframework.mail.javamail.MimeMessagePreparator;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -29,6 +33,7 @@ public class BookingServiceImpl implements BookingService{
     private final UserClient userClient;
     private final RoomClient roomClient;
     private final KafkaTemplate<String, BookingMadeEvent> kafkaTemplate;
+    private final JavaMailSender javaMailSender;
     private UserInfoEvent userInfoEvent;
 
     @KafkaListener(topics = "user-info")
@@ -57,7 +62,7 @@ public class BookingServiceImpl implements BookingService{
 
             bookingRepository.save(booking);
 
-//            roomClient.updateAvailability(bookingRequest.roomId(), false);
+            roomClient.updateAvailability(bookingRequest.roomId(), false);
 
             //Send message to Kafka
             BookingMadeEvent bookingMadeEvent =
@@ -75,6 +80,29 @@ public class BookingServiceImpl implements BookingService{
                     booking.getStartTime(), booking.getEndTime(), booking.getPurpose(),
                     booking.getEmail(),booking.getName(),booking.getRole());
         }else{
+            MimeMessagePreparator messagePreparator = mimeMessage -> {
+                MimeMessageHelper messageHelper = new MimeMessageHelper(mimeMessage);
+                messageHelper.setTo(userInfoEvent.getEmail());
+                messageHelper.setSubject("Your Booking was not made");
+                messageHelper.setText(String.format("""
+                                        
+                    Dear %1$s, 
+                    Your Booking for Room %2$s was not successfully approved due to scheduling conflicts. 
+                                        
+                    COMP3095 Staff
+                                        
+                                        
+                    """, userInfoEvent.getName(), bookingRequest.roomId()));
+            };
+
+
+            try {
+                javaMailSender.send(messagePreparator);
+                log.info("Booking Notif successfully sent");
+            } catch (MailException e) {
+                log.error("Exception occurred when sending mail", e);
+            }
+
             throw new RuntimeException("Room id " + bookingRequest.roomId() + " is not available");
         }
     }
@@ -106,6 +134,7 @@ public class BookingServiceImpl implements BookingService{
         Booking booking = mongoTemplate.findOne(query, Booking.class);
 
         if(booking != null){
+
             booking.setRoomId(bookingRequest.roomId());
             booking.setStartTime(bookingRequest.startTime());
             booking.setEndTime(bookingRequest.endTime());

@@ -16,7 +16,10 @@ import org.springframework.data.mongodb.core.query.Query;
 
 
 import org.springframework.kafka.annotation.KafkaListener;
+import org.springframework.mail.MailException;
 import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.mail.javamail.MimeMessageHelper;
+import org.springframework.mail.javamail.MimeMessagePreparator;
 import org.springframework.stereotype.Service;
 
 
@@ -33,6 +36,7 @@ public class EventServiceImpl implements EventService {
     private final MongoTemplate mongoTemplate;
     private final BookingClient bookingClient;
     private final UserClient userClient;
+    private final JavaMailSender javaMailSender;
 
     @KafkaListener(topics = "booking-made")
     public void listen(BookingMadeEvent bookingMadeEvent){
@@ -51,6 +55,32 @@ public class EventServiceImpl implements EventService {
                 .approval("PENDING")
                 .build();
         eventRepository.save(event);
+
+        MimeMessagePreparator messagePreparator = mimeMessage -> {
+            MimeMessageHelper messageHelper = new MimeMessageHelper(mimeMessage);
+            messageHelper.setTo(bookingMadeEvent.getEmail());
+            messageHelper.setSubject(String.format("Your Booking (%1$s) was placed successfully", bookingMadeEvent.getBookingNumber()));
+            messageHelper.setText(String.format("""
+                                        
+                    Dear %2$s, 
+                    Your Booking for room %3$s with Booking number %1$s has been successfully placed. 
+                                        
+                    An event has been made for the booking. Please click this link to fill in in your event details. 
+                                        
+                    Thank you for your business.
+                    COMP3095 Staff
+                                        
+                                        
+                    """, bookingMadeEvent.getBookingNumber(), bookingMadeEvent.getOrganizerName(), bookingMadeEvent.getRoomId()));
+        };
+
+
+        try {
+            javaMailSender.send(messagePreparator);
+            log.info("Booking Notif successfully sent");
+        } catch (MailException e) {
+            log.error("Exception occurred when sending mail", e);
+        }
     }
 
 
