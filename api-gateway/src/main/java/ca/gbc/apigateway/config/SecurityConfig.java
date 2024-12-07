@@ -11,6 +11,9 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationConverter;
 import org.springframework.security.oauth2.server.resource.authentication.JwtGrantedAuthoritiesConverter;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.CorsConfigurationSource;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -25,11 +28,15 @@ public class SecurityConfig {
     private final String[] noAuthResourceUris = {
             "/swagger-ui",
             "/swagger-ui/*",
+            "/swagger-ui/**",
+            "/webjars/**",
             "/v3/api-docs/**",
             "/swagger-resource/**",
             "/api-docs/**",
             "/aggregate/**"
     };
+
+
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) throws Exception {
@@ -79,4 +86,6 @@ public class SecurityConfig {
 
         return authenticationConverter;
     }
+
+
 }

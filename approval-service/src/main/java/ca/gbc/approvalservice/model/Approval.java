@@ -19,6 +19,7 @@ public class Approval {
 
     private String eventId;
     private Long userId;
+    private String userRole;
     private String status; //PENDING APPROVED REJECTED
     private LocalDateTime time;
 }

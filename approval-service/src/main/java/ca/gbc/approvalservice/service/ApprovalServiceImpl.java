@@ -4,10 +4,12 @@ import ca.gbc.approvalservice.client.EventClient;
 import ca.gbc.approvalservice.client.UserClient;
 import ca.gbc.approvalservice.dto.ApprovalRequest;
 import ca.gbc.approvalservice.dto.ApprovalResponse;
+import ca.gbc.approvalservice.event.EventMadeEvent;
 import ca.gbc.approvalservice.model.Approval;
 import ca.gbc.approvalservice.repository.ApprovalRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -25,6 +27,19 @@ public class ApprovalServiceImpl implements ApprovalService {
     private final UserClient userClient;
     private final EventClient eventClient;
 
+    @KafkaListener(topics = "event-made")
+    public void listen(EventMadeEvent eventMadeEvent){
+        Approval approval = Approval.builder()
+                .eventId(eventMadeEvent.getEventId())
+                .userId(eventMadeEvent.getOrganizerId())
+                .userRole(eventMadeEvent.getOrganizerRole())
+                .status("PENDING")
+                .time(LocalDateTime.now())
+                .build();
+        approvalRepository.save(approval);
+    }
+
+
 
     @Override
     public ApprovalResponse approveEvent(ApprovalRequest approvalRequest) {
@@ -37,10 +52,12 @@ public class ApprovalServiceImpl implements ApprovalService {
             approval.setEventId(approvalRequest.eventId());
             approval.setUserId(approvalRequest.userId());
             approval.setStatus("APPROVED");
+            approval.setUserRole(approvalRequest.userRole());
             approval.setTime(LocalDateTime.now());
             Approval newApproval = approvalRepository.save(approval);
             return new ApprovalResponse(newApproval.getId(), newApproval.getEventId(),
-                    newApproval.getUserId(), newApproval.getStatus(), newApproval.getTime());
+                    newApproval.getUserId(), newApproval.getUserRole(),
+                    newApproval.getStatus(), newApproval.getTime());
         }else{
             return rejectEvent(approvalRequest);
         }
@@ -51,11 +68,13 @@ public class ApprovalServiceImpl implements ApprovalService {
         Approval approval = new Approval();
         approval.setEventId(approvalRequest.eventId());
         approval.setUserId(approvalRequest.userId());
+        approval.setUserRole(approvalRequest.userRole());
         approval.setStatus("REJECTED");
         approval.setTime(LocalDateTime.now());
         Approval newApproval = approvalRepository.save(approval);
         return new ApprovalResponse(newApproval.getId(), newApproval.getEventId(),
-                newApproval.getUserId(), newApproval.getStatus(), newApproval.getTime());
+                newApproval.getUserId(), newApproval.getUserRole(),
+                newApproval.getStatus(), newApproval.getTime());
     }
 
     @Override
@@ -92,6 +111,7 @@ public class ApprovalServiceImpl implements ApprovalService {
 
     private ApprovalResponse mapToApprovalResponse(Approval approval){
         return new ApprovalResponse(approval.getId(), approval.getEventId(),
-                approval.getUserId(), approval.getStatus(), approval.getTime());
+                approval.getUserId(), approval.getUserRole(),
+                approval.getStatus(), approval.getTime());
     }
 }

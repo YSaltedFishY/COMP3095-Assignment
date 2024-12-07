@@ -6,6 +6,7 @@ import ca.gbc.eventservice.client.UserClient;
 import ca.gbc.eventservice.dto.EventRequest;
 import ca.gbc.eventservice.dto.EventResponse;
 import ca.gbc.eventservice.event.BookingMadeEvent;
+import ca.gbc.eventservice.event.EventMadeEvent;
 import ca.gbc.eventservice.model.Event;
 import ca.gbc.eventservice.repository.EventRepository;
 import lombok.RequiredArgsConstructor;
@@ -16,6 +17,7 @@ import org.springframework.data.mongodb.core.query.Query;
 
 
 import org.springframework.kafka.annotation.KafkaListener;
+import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.mail.MailException;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
@@ -37,6 +39,7 @@ public class EventServiceImpl implements EventService {
     private final BookingClient bookingClient;
     private final UserClient userClient;
     private final JavaMailSender javaMailSender;
+    private final KafkaTemplate<String, EventMadeEvent> kafkaTemplate;
 
     @KafkaListener(topics = "booking-made")
     public void listen(BookingMadeEvent bookingMadeEvent){
@@ -55,6 +58,14 @@ public class EventServiceImpl implements EventService {
                 .approval("PENDING")
                 .build();
         eventRepository.save(event);
+
+        //Send to approval service
+        EventMadeEvent eventMadeEvent =
+                new EventMadeEvent(event.getId(),event.getOrganizerId(),
+                        event.getOrganizerRole());
+        log.info("Start - Sending EventMadeEvent {} to Kafka topic event-made", eventMadeEvent);
+        kafkaTemplate.send("event-made", eventMadeEvent);
+        log.info("Complete - Sent BookingMadeEvent {} to Kafka topic event-made", eventMadeEvent);
 
         MimeMessagePreparator messagePreparator = mimeMessage -> {
             MimeMessageHelper messageHelper = new MimeMessageHelper(mimeMessage);

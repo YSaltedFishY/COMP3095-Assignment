@@ -62,7 +62,7 @@ public class BookingServiceImpl implements BookingService{
 
             bookingRepository.save(booking);
 
-            roomClient.updateAvailability(bookingRequest.roomId(), false);
+//            roomClient.updateAvailability(bookingRequest.roomId(), false);
 
             //Send message to Kafka
             BookingMadeEvent bookingMadeEvent =

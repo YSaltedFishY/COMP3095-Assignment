@@ -1,0 +1,1 @@
+ALTER TABLE t_approvals RENAME COLUMN userRole TO user_role;
